@@ -1,0 +1,566 @@
+{
+  "total": 83,
+  "friends": [
+    {
+      "key": "friend:1",
+      "kind": "friend",
+      "n": 1,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 1 — 대표 모습(인물구성도), 한 줄 기둥"
+    },
+    {
+      "key": "friend:2",
+      "kind": "friend",
+      "n": 2,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 2 — 대표 모습(인물구성도), 한 줄 기둥"
+    },
+    {
+      "key": "friend:3",
+      "kind": "friend",
+      "n": 3,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 3 — 대표 모습(인물구성도), 한 줄 기둥"
+    },
+    {
+      "key": "friend:4",
+      "kind": "friend",
+      "n": 4,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 4 — 대표 모습(인물구성도), 2열"
+    },
+    {
+      "key": "friend:5",
+      "kind": "friend",
+      "n": 5,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 5 — 대표 모습(인물구성도), 한 줄 기둥"
+    },
+    {
+      "key": "friend:6",
+      "kind": "friend",
+      "n": 6,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 6 — 대표 모습(인물구성도), 2열"
+    },
+    {
+      "key": "friend:7",
+      "kind": "friend",
+      "n": 7,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 7 — 대표 모습(인물구성도), 한 줄 기둥"
+    },
+    {
+      "key": "friend:8",
+      "kind": "friend",
+      "n": 8,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 8 — 대표 모습(인물구성도), 2열"
+    },
+    {
+      "key": "friend:9",
+      "kind": "friend",
+      "n": 9,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 9 — 대표 모습(인물구성도), 3열"
+    },
+    {
+      "key": "friend:10",
+      "kind": "friend",
+      "n": 10,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 10 — 대표 모습(인물구성도), 한 줄 기둥"
+    },
+    {
+      "key": "friend:11",
+      "kind": "friend",
+      "n": 11,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 11 — 대표 모습(인물구성도), 2열"
+    },
+    {
+      "key": "friend:12",
+      "kind": "friend",
+      "n": 12,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 12 — 대표 모습(인물구성도), 3열"
+    },
+    {
+      "key": "friend:13",
+      "kind": "friend",
+      "n": 13,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 13 — 대표 모습(인물구성도), 2열"
+    },
+    {
+      "key": "friend:14",
+      "kind": "friend",
+      "n": 14,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 14 — 대표 모습(인물구성도), 2열"
+    },
+    {
+      "key": "friend:15",
+      "kind": "friend",
+      "n": 15,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 15 — 대표 모습(인물구성도), 5열"
+    },
+    {
+      "key": "friend:16",
+      "kind": "friend",
+      "n": 16,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 16 — 대표 모습(인물구성도), 4열"
+    },
+    {
+      "key": "friend:17",
+      "kind": "friend",
+      "n": 17,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 17 — 대표 모습(인물구성도), 2열"
+    },
+    {
+      "key": "friend:18",
+      "kind": "friend",
+      "n": 18,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 18 — 대표 모습(인물구성도), 2열"
+    },
+    {
+      "key": "friend:19",
+      "kind": "friend",
+      "n": 19,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 19 — 대표 모습(인물구성도), 2열"
+    },
+    {
+      "key": "friend:20",
+      "kind": "friend",
+      "n": 20,
+      "form": "shape",
+      "now": "흰 블록(임시)",
+      "what": "숫자 친구 20 — 대표 모습(인물구성도), 2열"
+    },
+    {
+      "key": "friend:4:tower",
+      "kind": "friend",
+      "n": 4,
+      "form": "tower",
+      "now": "흰 블록 기둥(임시)",
+      "what": "숫자 친구 4 — 기둥 모습(인물구성2)"
+    },
+    {
+      "key": "friend:6:tower",
+      "kind": "friend",
+      "n": 6,
+      "form": "tower",
+      "now": "흰 블록 기둥(임시)",
+      "what": "숫자 친구 6 — 기둥 모습(인물구성2)"
+    },
+    {
+      "key": "friend:8:tower",
+      "kind": "friend",
+      "n": 8,
+      "form": "tower",
+      "now": "흰 블록 기둥(임시)",
+      "what": "숫자 친구 8 — 기둥 모습(인물구성2)"
+    },
+    {
+      "key": "friend:9:tower",
+      "kind": "friend",
+      "n": 9,
+      "form": "tower",
+      "now": "흰 블록 기둥(임시)",
+      "what": "숫자 친구 9 — 기둥 모습(인물구성2)"
+    }
+  ],
+  "guide": [
+    {
+      "key": "guide",
+      "kind": "guide",
+      "n": 1,
+      "now": "123 카드",
+      "what": "안내 친구(1) — 손 흔들며 인사"
+    },
+    {
+      "key": "guide:cheer",
+      "kind": "guide",
+      "n": 1,
+      "now": "123 카드",
+      "what": "안내 친구(1) — 두 팔 들고 신난 모습"
+    },
+    {
+      "key": "guide:wow",
+      "kind": "guide",
+      "n": 1,
+      "now": "123 카드",
+      "what": "안내 친구(1) — 깜짝 놀란 모습"
+    }
+  ],
+  "things": [
+    {
+      "key": "thing:apple",
+      "kind": "thing",
+      "now": "🍎",
+      "what": "세는 물건: 사과"
+    },
+    {
+      "key": "thing:strawberry",
+      "kind": "thing",
+      "now": "🍓",
+      "what": "세는 물건: 딸기"
+    },
+    {
+      "key": "thing:banana",
+      "kind": "thing",
+      "now": "🍌",
+      "what": "세는 물건: 바나나"
+    },
+    {
+      "key": "thing:cookie",
+      "kind": "thing",
+      "now": "🍪",
+      "what": "세는 물건: 쿠키"
+    },
+    {
+      "key": "thing:balloon",
+      "kind": "thing",
+      "now": "🎈",
+      "what": "세는 물건: 풍선"
+    },
+    {
+      "key": "thing:star",
+      "kind": "thing",
+      "now": "⭐",
+      "what": "세는 물건: 별"
+    },
+    {
+      "key": "thing:ball",
+      "kind": "thing",
+      "now": "⚽",
+      "what": "세는 물건: 공"
+    },
+    {
+      "key": "thing:car",
+      "kind": "thing",
+      "now": "🚗",
+      "what": "세는 물건: 자동차"
+    },
+    {
+      "key": "thing:flower",
+      "kind": "thing",
+      "now": "🌸",
+      "what": "세는 물건: 꽃"
+    },
+    {
+      "key": "thing:fish",
+      "kind": "thing",
+      "now": "🐟",
+      "what": "세는 물건: 물고기"
+    },
+    {
+      "key": "thing:chick",
+      "kind": "thing",
+      "now": "🐥",
+      "what": "세는 물건: 병아리"
+    },
+    {
+      "key": "thing:butterfly",
+      "kind": "thing",
+      "now": "🦋",
+      "what": "세는 물건: 나비"
+    }
+  ],
+  "icons": [
+    {
+      "key": "icon:menu:free",
+      "kind": "icon",
+      "now": "🎮",
+      "what": "메뉴 아이콘: 놀이터 — 숫자 친구가 그 놀이를 하는 모습"
+    },
+    {
+      "key": "icon:menu:games",
+      "kind": "icon",
+      "now": "🎲",
+      "what": "메뉴 아이콘: 숫자 놀이 — 숫자 친구가 그 놀이를 하는 모습"
+    },
+    {
+      "key": "icon:menu:friends",
+      "kind": "icon",
+      "now": "🧱",
+      "what": "메뉴 아이콘: 숫자 친구 — 숫자 친구가 그 놀이를 하는 모습"
+    },
+    {
+      "key": "icon:menu:write",
+      "kind": "icon",
+      "now": "✏️",
+      "what": "메뉴 아이콘: 숫자 쓰기 — 숫자 친구가 그 놀이를 하는 모습"
+    },
+    {
+      "key": "icon:block",
+      "kind": "icon",
+      "now": "블록(SVG)",
+      "what": "모으는 블록 하나 — 보상(노란 큐브)"
+    },
+    {
+      "key": "icon:ui:lock",
+      "kind": "icon",
+      "now": "🔒",
+      "what": "잠금"
+    },
+    {
+      "key": "icon:ui:party",
+      "kind": "icon",
+      "now": "🎉",
+      "what": "축하"
+    },
+    {
+      "key": "icon:ui:sparkle",
+      "kind": "icon",
+      "now": "✨",
+      "what": "반짝"
+    },
+    {
+      "key": "icon:ui:star",
+      "kind": "icon",
+      "now": "⭐",
+      "what": "별(도장)"
+    },
+    {
+      "key": "icon:ui:clap",
+      "kind": "icon",
+      "now": "👏",
+      "what": "손뼉 치는 손"
+    },
+    {
+      "key": "icon:ui:home",
+      "kind": "icon",
+      "now": "🏠",
+      "what": "집(돌아가기)"
+    },
+    {
+      "key": "icon:ui:moon",
+      "kind": "icon",
+      "now": "🌙",
+      "what": "내일 또(달)"
+    },
+    {
+      "key": "icon:ui:crown",
+      "kind": "icon",
+      "now": "👑",
+      "what": "왕관(마스터)"
+    },
+    {
+      "key": "icon:play:count",
+      "kind": "icon",
+      "now": "👆",
+      "what": "하나씩 세기 — a cute hand with the index finger pointing, counting"
+    },
+    {
+      "key": "icon:play:find-num",
+      "kind": "icon",
+      "now": "👂",
+      "what": "숫자 찾기 — a friendly cartoon ear with small curved sound waves, listening"
+    },
+    {
+      "key": "icon:play:compare",
+      "kind": "icon",
+      "now": "⚖️",
+      "what": "더 많은 쪽 — a toy balance scale tipping to one side"
+    },
+    {
+      "key": "icon:play:next-num",
+      "kind": "icon",
+      "now": "➡️",
+      "what": "다음 숫자 — a chunky rounded arrow pointing right"
+    },
+    {
+      "key": "icon:play:shape",
+      "kind": "icon",
+      "now": "🔺",
+      "what": "모양 찾기 — a red circle, a yellow triangle and a blue square grouped together, chunky toy shapes"
+    },
+    {
+      "key": "icon:play:pattern",
+      "kind": "icon",
+      "now": "🔁",
+      "what": "규칙 찾기 — a short row of balls alternating red and blue"
+    },
+    {
+      "key": "icon:play:join",
+      "kind": "icon",
+      "now": "🤝",
+      "what": "모아 보기 — a stack of blue toy cubes and a stack of pink toy cubes pushed together"
+    },
+    {
+      "key": "icon:play:size",
+      "kind": "icon",
+      "now": "📏",
+      "what": "크기 비교 — a big blue circle next to a small blue circle"
+    },
+    {
+      "key": "icon:play:add",
+      "kind": "icon",
+      "now": "➕",
+      "what": "더하기 — a chunky rounded plus-sign shaped toy, green"
+    },
+    {
+      "key": "icon:play:subtract",
+      "kind": "icon",
+      "now": "➖",
+      "what": "빼기 — a chunky rounded minus-sign shaped toy, orange"
+    },
+    {
+      "key": "icon:play:sort",
+      "kind": "icon",
+      "now": "🧺",
+      "what": "모양 나누기 — a small woven basket holding a few colourful toy shapes"
+    }
+  ],
+  "scenes": [
+    {
+      "key": "scene:free:count",
+      "kind": "scene",
+      "now": "👆",
+      "what": "놀이터 카드 장면: 하나씩 세기"
+    },
+    {
+      "key": "scene:free:how-many",
+      "kind": "scene",
+      "now": "🍎",
+      "what": "놀이터 카드 장면: 몇 개일까?"
+    },
+    {
+      "key": "scene:free:find-num",
+      "kind": "scene",
+      "now": "👂",
+      "what": "놀이터 카드 장면: 숫자 찾기"
+    },
+    {
+      "key": "scene:free:build",
+      "kind": "scene",
+      "now": "🧱",
+      "what": "놀이터 카드 장면: 블록 쌓기"
+    },
+    {
+      "key": "scene:free:clap",
+      "kind": "scene",
+      "now": "👏",
+      "what": "놀이터 카드 장면: 짝짝 손뼉"
+    },
+    {
+      "key": "scene:free:compare",
+      "kind": "scene",
+      "now": "⚖️",
+      "what": "놀이터 카드 장면: 더 많은 쪽"
+    },
+    {
+      "key": "scene:free:next-num",
+      "kind": "scene",
+      "now": "➡️",
+      "what": "놀이터 카드 장면: 다음 숫자"
+    },
+    {
+      "key": "scene:free:shape",
+      "kind": "scene",
+      "now": "🔺",
+      "what": "놀이터 카드 장면: 모양 찾기"
+    },
+    {
+      "key": "scene:free:pattern",
+      "kind": "scene",
+      "now": "🔁",
+      "what": "놀이터 카드 장면: 규칙 찾기"
+    },
+    {
+      "key": "scene:free:join",
+      "kind": "scene",
+      "now": "🤝",
+      "what": "놀이터 카드 장면: 모아 보기"
+    },
+    {
+      "key": "scene:free:size",
+      "kind": "scene",
+      "now": "📏",
+      "what": "놀이터 카드 장면: 크기 비교"
+    },
+    {
+      "key": "scene:free:add",
+      "kind": "scene",
+      "now": "➕",
+      "what": "놀이터 카드 장면: 더하기"
+    },
+    {
+      "key": "scene:free:subtract",
+      "kind": "scene",
+      "now": "➖",
+      "what": "놀이터 카드 장면: 빼기"
+    },
+    {
+      "key": "scene:free:sort",
+      "kind": "scene",
+      "now": "🧺",
+      "what": "놀이터 카드 장면: 모양 나누기"
+    }
+  ],
+  "bgs": [
+    {
+      "key": "bg:home",
+      "kind": "bg",
+      "now": "CSS 구름",
+      "what": "첫 화면 바탕 — 넘버랜드 언덕과 하늘(가운데는 비워 둠)"
+    },
+    {
+      "key": "bg:play",
+      "kind": "bg",
+      "now": "CSS 구름",
+      "what": "오늘의 놀이 바탕"
+    },
+    {
+      "key": "bg:free",
+      "kind": "bg",
+      "now": "CSS 구름",
+      "what": "놀이터 바탕"
+    },
+    {
+      "key": "bg:friends",
+      "kind": "bg",
+      "now": "CSS 구름",
+      "what": "숫자 친구 앨범 바탕"
+    },
+    {
+      "key": "bg:write",
+      "kind": "bg",
+      "now": "CSS 구름",
+      "what": "숫자 쓰기 바탕"
+    }
+  ],
+  "app": [
+    {
+      "key": "app-icon",
+      "kind": "app",
+      "now": "123 (SVG)",
+      "what": "앱 아이콘 — 숫자 친구 1 얼굴 (512×512)"
+    }
+  ]
+}

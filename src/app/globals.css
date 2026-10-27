@@ -1,0 +1,376 @@
+@import "tailwindcss";
+
+/* 폰을 가로로 든 화면처럼 높이가 낮을 때 — short:text-xl 처럼 쓴다 */
+@custom-variant short (@media (max-height: 520px));
+
+/*
+  하온이의 숫자놀이 — 한글나라와 같은 화면 틀(유리 카드·말랑 버튼·큰 글씨)에 숫자 블록 색.
+  넘버블럭스 그림이 들어오면 대표색(--brand)은 그림을 보고 다시 맞춘다.
+  색은 여기 한 곳에서 정하고 화면은 이름(bg-peach, text-ink …)으로만 쓴다.
+*/
+:root {
+  --paper: #fff8ee;
+  --paper-deep: #f2e4d0;
+  --card: #ffffff;
+  --card-deep: #e3ddef;
+  --ink: #3e3a52;
+  --ink-soft: #8a85a3;
+  --peach: #ffbaa8;
+  --peach-deep: #ee8a70;
+  --butter: #ffe08f;
+  --butter-deep: #eeb43c;
+  --mint: #ade8cd;
+  --mint-deep: #4fbd90;
+  --sky: #b0d9f8;
+  --sky-deep: #58a8e6;
+  --lilac: #d5c7f6;
+  --lilac-deep: #9a80e2;
+  --rose: #ffcadd;
+  --rose-deep: #ea8eb3;
+  /* 대표색 — 가장 중요한 버튼 하나(시작하기)와 아이 이름표. 블록 장난감의 빨강 */
+  --brand: #ef5a4c;
+  --brand-soft: #ffe4df;
+  --brand-deep: #c63d31;
+  /* 이 앱은 밝은 화면 전용 — 기기가 어두운 테마여도 종이색 그대로 */
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-peach: var(--peach);
+  --color-peach-deep: var(--peach-deep);
+  --color-butter: var(--butter);
+  --color-butter-deep: var(--butter-deep);
+  --color-mint: var(--mint);
+  --color-mint-deep: var(--mint-deep);
+  --color-sky: var(--sky);
+  --color-sky-deep: var(--sky-deep);
+  --color-lilac: var(--lilac);
+  --color-lilac-deep: var(--lilac-deep);
+  --color-rose: var(--rose);
+  --color-rose-deep: var(--rose-deep);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-deep: var(--brand-deep);
+  /* 모두 프리텐다드(app/fonts) — 굵기로 역할을 나눈다: 화면 글씨 800 · 본문 600 · 배우는 숫자 800 */
+  --font-display: "Pretendard Variable", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-body: "Pretendard Variable", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-letter: "Pretendard Variable", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+
+@theme {
+  --animate-float: float 3.4s ease-in-out infinite;
+  --animate-pop-in: pop-in 0.5s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+  --animate-shake: shake 0.45s ease-in-out;
+  --animate-wiggle: wiggle 0.6s ease-in-out;
+  --animate-breathe: breathe 1.8s ease-in-out infinite;
+  --animate-drop-in: drop-in 0.35s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+  --animate-fly-up: fly-up 1.2s cubic-bezier(0.2, 1.2, 0.4, 1) both;
+  --animate-die-tumble: die-tumble 1.6s linear both;
+  --animate-merge-out: merge-out 0.35s ease-in both;
+  --animate-leave-up: leave-up 0.6s ease-in both;
+
+  /* 주사위 윷놀이 큰 주사위 — 하늘에서 쿵 떨어져 한 번 튀고, 도로로로 세 번 굴러가다(90도씩) 가운데에 반듯하게 멈춘다 */
+  @keyframes die-tumble {
+    0% {
+      transform: translate(-150%, -85vh) rotate(-240deg);
+      animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+    }
+    32% {
+      transform: translate(-150%, 0) rotate(-30deg);
+      animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
+    }
+    42% {
+      transform: translate(-120%, -35%) rotate(10deg);
+      animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+    }
+    52% {
+      transform: translate(-90%, 0) rotate(90deg);
+      animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
+    }
+    59% {
+      transform: translate(-70%, -14%) rotate(135deg);
+      animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+    }
+    66% {
+      transform: translate(-50%, 0) rotate(180deg);
+      animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
+    }
+    73% {
+      transform: translate(-32%, -10%) rotate(225deg);
+      animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+    }
+    80% {
+      transform: translate(-16%, 0) rotate(270deg);
+      animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
+    }
+    87% {
+      transform: translate(-6%, -5%) rotate(315deg);
+      animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+    }
+    100% {
+      transform: translate(0, 0) rotate(360deg);
+    }
+  }
+
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+  @keyframes pop-in {
+    0% {
+      transform: scale(0.4);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(-12px);
+    }
+    40% {
+      transform: translateX(10px);
+    }
+    60% {
+      transform: translateX(-7px);
+    }
+    80% {
+      transform: translateX(4px);
+    }
+  }
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(0);
+    }
+    25% {
+      transform: rotate(-5deg) scale(1.03);
+    }
+    75% {
+      transform: rotate(5deg) scale(1.03);
+    }
+  }
+  @keyframes breathe {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.07);
+    }
+  }
+  /* 블록 쌓기 — 위에서 톡 떨어진다 */
+  @keyframes drop-in {
+    0% {
+      transform: translateY(-60%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  @keyframes fly-up {
+    0% {
+      transform: translate(-50%, 30px) scale(0.3);
+      opacity: 0;
+    }
+    35% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, -30px) scale(1);
+      opacity: 1;
+    }
+  }
+  /* 더하기·빼기 — 모인 블록 기둥이 친구로 바뀔 때 반짝 사라진다 */
+  @keyframes merge-out {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.2);
+      opacity: 0;
+    }
+  }
+  /* 빼기 — 떠나는 블록이 위로 날아간다 */
+  @keyframes leave-up {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-160%);
+      opacity: 0;
+    }
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+/*
+  폰 가로처럼 높이가 낮은 화면 — 글씨·여백·버튼(rem 단위)을 한꺼번에 줄인다(16px → 10px).
+  vh·vw 로 잡은 크기는 원래 화면에 맞춰 줄어들고, 안내 친구·스피커처럼 px 로 받는 것은 useCompact() 로 줄인다.
+*/
+@media (max-height: 520px) {
+  html {
+    font-size: 10px;
+  }
+}
+
+/*
+  세로 화면(처음 설정) — 크기는 가로 화면 기준 min(…vh, …vw) 로 잡혀 있어서 세로에선 vw 쪽이 너무 작아진다.
+  그 식 안의 vw 는 --vw 로 쓰고(가로 = 1vw 그대로), 세로일 때만 키운다. 폰 세로는 글씨·여백(rem)도 조금 줄인다(16px → 13px).
+*/
+:root {
+  --vw: 1vw;
+}
+@media (orientation: portrait) {
+  :root {
+    --vw: 1.45vw;
+  }
+}
+@media (orientation: portrait) and (max-width: 520px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  /* 아이가 길게 눌러도 글자 선택·확대 메뉴가 뜨지 않게 */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+/* 프리텐다드 굵기 — 화면 글씨(버튼·제목)는 두툼하게, 본문은 또렷하게 */
+@layer utilities {
+  .font-display {
+    font-weight: 800;
+  }
+  .font-body {
+    font-weight: 600;
+  }
+}
+
+/* 떠 있는 유리 카드 — 이름표·숫자·메뉴 바·오늘의 놀이 카드. 그림자는 부드럽게 한 가지 */
+.glass {
+  background: rgb(255 255 255 / 0.84);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border: 1px solid rgb(255 255 255 / 0.75);
+  box-shadow:
+    0 12px 32px -14px rgb(62 58 82 / 0.32),
+    0 2px 6px -2px rgb(62 58 82 / 0.08);
+}
+
+/* 화면에서 가장 중요한 버튼 하나 — 대표색(시작하기) */
+.cta {
+  color: #fff;
+  background: linear-gradient(180deg, #ff8a76 0%, var(--brand) 100%);
+  box-shadow:
+    0 6px 0 var(--brand-deep),
+    0 18px 30px -14px rgb(198 61 49 / 0.7);
+  text-shadow: 0 2px 0 rgb(150 40 30 / 0.22);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.cta:active {
+  transform: translateY(5px);
+  box-shadow:
+    0 1px 0 var(--brand-deep),
+    0 6px 14px -8px rgb(198 61 49 / 0.5);
+}
+
+/* 말랑 버튼 — 색은 style 의 --tone / --tone-deep (components/ui 의 toneStyle) */
+.squish {
+  background: var(--tone, var(--card));
+  box-shadow:
+    0 7px 0 var(--tone-deep, var(--paper-deep)),
+    0 14px 26px -12px rgb(62 58 82 / 0.35);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    filter 0.2s ease;
+}
+.squish:active:not(:disabled) {
+  transform: translateY(6px);
+  box-shadow:
+    0 1px 0 var(--tone-deep, var(--paper-deep)),
+    0 4px 10px -6px rgb(62 58 82 / 0.3);
+}
+.squish:disabled {
+  filter: grayscale(0.5) opacity(0.55);
+}
+
+/* 제목 글씨 — 장난감 블록처럼 노란 글자에 빨간 테두리(제목·앱 이름). 넘버블럭스 그림이 오면 다시 맞춘다 */
+.title-pop {
+  font-weight: 900;
+  color: #ffd23f;
+  -webkit-text-stroke: 0.07em var(--brand-deep);
+  paint-order: stroke fill;
+  text-shadow: 0 0.07em 0 rgb(150 40 30 / 0.25);
+  letter-spacing: 0.02em;
+}
+
+/* 노래방 읽기 — 성우가 읽은 곳까지 글자가 대표색으로(components/ReadAlong) */
+.read-char {
+  transition: color 0.15s ease;
+}
+.read-lit {
+  color: var(--brand-deep);
+}
+
+/* 스크롤되는 목록 — 위·아래 끝을 부드럽게 흐려서 머리글 밑에서 칼로 자른 듯 끊겨 보이지 않게 */
+.scroll-fade {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14px, #000 calc(100% - 18px), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 14px, #000 calc(100% - 18px), transparent 100%);
+}
+
+/* 종이 위 작은 네모 무늬 — 숫자 공책 같은 바탕 */
+.paper-grid {
+  background-image:
+    linear-gradient(rgb(62 58 82 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(62 58 82 / 0.045) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
