@@ -164,7 +164,8 @@ export default function GamesScreen() {
 
   return (
     <ModeShell title={menu.title} icon={menu.icon} iconId={`menu:${menu.id}`} scene="free">
-      <div className="mx-auto grid max-w-5xl grid-cols-2 gap-4 p-5 pb-8 sm:grid-cols-3 portrait:gap-3 portrait:p-3">
+      {/* 세로 화면은 카드 여섯 장이 화면보다 낮아 아래가 비었다 — 위아래 가운데로(사용자 10-27, 넘치면 그대로 스크롤) */}
+      <div className="mx-auto grid max-w-5xl grid-cols-2 gap-4 p-5 pb-8 sm:grid-cols-3 portrait:min-h-full portrait:content-center portrait:gap-3 portrait:p-3">
         {ORIGINALS.map((g) => (
           <MenuCard key={g.id} tone={g.tone} art={<OriginalArt id={g.id} />} artClassName="aspect-[4/3]" title={g.title} sub={g.learn} onClick={() => start(g)} />
         ))}
