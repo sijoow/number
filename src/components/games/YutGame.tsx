@@ -528,9 +528,9 @@ export function YutGame({ known, onDone }: { known: number; onDone: OnDone }) {
         </p>
       </div>
 
-      {/* 가운데 큰 주사위 — 하늘에서 떨어져 구르다 멈추면 나온 수를 크게 */}
+      {/* 가운데 큰 주사위 — 하늘에서 떨어져 구르다 멈추면 나온 수를 크게. 판을 덮는 흰 막은 없다(사용자 10-27: 주사위가 커서 그것만으로 잘 보인다) */}
       {drop && (
-        <div className="pointer-events-none absolute inset-0 z-30 grid place-items-center bg-white/25">
+        <div className="pointer-events-none absolute inset-0 z-30 grid place-items-center">
           <div className="relative grid place-items-center">
             <span key={drop.key} className="inline-block animate-die-tumble" style={{ filter: "drop-shadow(0 14px 10px rgb(62 58 82 / 0.3))" }}>
               <Die face={drop.face} size="min(30vh, calc(24*var(--vw)))" />
