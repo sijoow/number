@@ -1,7 +1,8 @@
-// 하온이의 한글나라 — 안드로이드 시험판(TWA). 보이스동화(10-20) 때 받아 둔 JDK 17 · 안드로이드 SDK · @bubblewrap/core 를 빌려 쓴다.
-//   node build.cjs key            서명 키를 (처음 한 번) 만들고 SHA-256 지문을 보여 준다 — 사이트 assetlinks 에 넣는다
-//   node build.cjs <사이트 주소>   그 사이트의 웹 매니페스트로 out/hangulnara-test.apk 를 만든다
-// 키 비밀번호는 keys.json(이 폴더, 저장소 밖)에만 — 화면에 찍지 않는다.
+// 하온이의 숫자놀이 — 안드로이드 시험판(TWA). 보이스동화(10-20) 때 받아 둔 JDK 17 · 안드로이드 SDK · @bubblewrap/core 를 빌려 쓴다
+// (한글나라 build.cjs 를 옮겨 와 패키지·키·폴더만 바꿈, 2026-10-27).
+//   node build.cjs key            서명 키를 (처음 한 번) 만들고 SHA-256 지문을 보여 준다 — src/app/.well-known/assetlinks.json 에 넣는다
+//   node build.cjs <사이트 주소>   그 사이트의 웹 매니페스트로 out/haon-number-test.apk 를 만든다
+// 서명 키·비밀번호(keys.json)는 저장소 밖 KEYDIR 에만 — 화면에 찍지 않는다. 키를 잃으면 다음 APK 가 기존 앱 위에 안 깔린다(백업할 것).
 const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
@@ -17,11 +18,14 @@ if (process.platform === "win32") {
 }
 
 // 경로에 띄어쓰기("Yogibo Design")가 있으면 윈도우의 안드로이드 도구(zipalign·apksigner)가 깨진다 — 짧은 경로(YOGIBO~1)를 쓴다
-const B = "C:/Users/YOGIBO~1/AppData/Local/Temp/claude/c--Users-Yogibo-Design-Desktop-todo/21d677af-c334-4b29-a0cc-6e491020cd27/scratchpad/apk-hangul";
-const PACKAGE_ID = "kr.haon.hangulnara";
-const ALIAS = "hangulnara";
-const KEYSTORE = path.join(B, "hangulnara-test.keystore");
-const KEYS_JSON = path.join(B, "keys.json");
+// 서명 키는 오래 남는 곳(KEYDIR), gradle 프로젝트·결과물은 지워져도 되는 임시 폴더(B)
+const KEYDIR = "C:/Users/YOGIBO~1/haon-apk/sujanori";
+const B = "C:/Users/YOGIBO~1/AppData/Local/Temp/claude/c--Users-Yogibo-Design-Desktop-nmber/781fd5a2-20ba-40c7-b3e7-dff395d02204/scratchpad/apk-number";
+const PACKAGE_ID = "kr.haon.sujanori";
+const ALIAS = "sujanori";
+const APK_NAME = "haon-number-test.apk";
+const KEYSTORE = path.join(KEYDIR, "sujanori.keystore");
+const KEYS_JSON = path.join(KEYDIR, "keys.json");
 const PROJECT = path.join(B, "project");
 const OUT = path.join(B, "out");
 
@@ -33,6 +37,7 @@ const randomPassword = () => crypto.randomBytes(18).toString("base64").replace(/
   const jdk = new JdkHelper(process, config);
   const keyTool = new KeyTool(jdk, log);
 
+  fs.mkdirSync(KEYDIR, { recursive: true });
   if (!fs.existsSync(KEYS_JSON)) {
     // PKCS12 는 키 비밀번호가 저장소 비밀번호와 같아야 한다
     const pass = randomPassword();
@@ -45,7 +50,7 @@ const randomPassword = () => crypto.randomBytes(18).toString("base64").replace(/
       alias: ALIAS,
       password: storePass,
       keypassword: keyPass,
-      fullName: "Haon Hangulnara",
+      fullName: "Haon Sujanori",
       organizationalUnit: "Family",
       organization: "Haon",
       country: "KR",
@@ -62,11 +67,11 @@ const randomPassword = () => crypto.randomBytes(18).toString("base64").replace(/
 
   const sdkOnly = process.argv[2] === "sign";
   if (sdkOnly) {
-    // gradle 은 끝났고 정렬·서명만 다시 — out/hangulnara-test.apk
+    // gradle 은 끝났고 정렬·서명만 다시 — out/haon-number-test.apk
     const sdk = await AndroidSdkTools.create(process, config, jdk, log);
     const unsigned = path.join(PROJECT, "app", "build", "outputs", "apk", "release", "app-release-unsigned.apk");
     const aligned = path.join(OUT, "app-release-unsigned-aligned.apk");
-    const apk = path.join(OUT, "hangulnara-test.apk");
+    const apk = path.join(OUT, APK_NAME);
     await sdk.zipalign(unsigned, aligned);
     await sdk.apksigner(KEYSTORE, storePass, ALIAS, keyPass, aligned, apk);
     fs.rmSync(aligned, { force: true });
@@ -80,7 +85,7 @@ const randomPassword = () => crypto.randomBytes(18).toString("base64").replace(/
 
   const twa = await TwaManifest.fromWebManifest(`${SITE}/manifest.webmanifest`);
   twa.packageId = PACKAGE_ID;
-  twa.launcherName = "한글나라";
+  twa.launcherName = "숫자놀이";
   twa.startUrl = "/";
   twa.signingKey = { path: KEYSTORE, alias: ALIAS };
   twa.appVersionCode = 1;
@@ -108,7 +113,7 @@ const randomPassword = () => crypto.randomBytes(18).toString("base64").replace(/
   await gradle.assembleRelease();
   const unsigned = path.join(PROJECT, "app", "build", "outputs", "apk", "release", "app-release-unsigned.apk");
   const aligned = path.join(OUT, "app-release-unsigned-aligned.apk");
-  const apk = path.join(OUT, "hangulnara-test.apk");
+  const apk = path.join(OUT, APK_NAME);
   await sdk.zipalign(unsigned, aligned);
   await sdk.apksigner(KEYSTORE, storePass, ALIAS, keyPass, aligned, apk);
   fs.rmSync(aligned, { force: true });

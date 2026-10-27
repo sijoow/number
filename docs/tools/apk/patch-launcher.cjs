@@ -3,7 +3,7 @@
 //    cutout 기본값으로 넘겨 카메라 쪽에 흰 띠가 남았다. 브라우저에 넘기기 직전에 SHORT_EDGES 로 바꿔 끼운다.
 // ② 앱 엔진은 크롬으로(6판, 2026-10-21): 사장님 폰은 기본 브라우저인 삼성 인터넷 30 이 앱을 띄웠고(설정 > 화면 진단),
 //    삼성 인터넷은 ①을 무시해 띠가 그대로였다. 크롬이 있고 TWA 를 하면 크롬으로, 없으면 원래대로(기본 브라우저) 고른다.
-// (한글나라) 화면 방향은 앱 안 '화면 보기' 설정이 screen.orientation.lock 으로 정한다 — 보이스동화의 태블릿 가로 고정은 뺐다.
+// (한글나라·숫자놀이) 화면 방향은 앱 안 '화면 보기' 설정이 screen.orientation.lock 으로 정한다 — 보이스동화의 태블릿 가로 고정은 뺐다.
 const fs = require("fs");
 module.exports = function patchLauncher(file) {
   let s = fs.readFileSync(file, "utf8");
