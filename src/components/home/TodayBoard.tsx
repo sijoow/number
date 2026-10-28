@@ -237,7 +237,7 @@ export function TodayBoard({ progress, today, onClose, onStay }: { progress: Pro
   const stamp = stampedNow ? "new" : claimed ? "stamped" : allDone ? "ready" : "ghost";
 
   return (
-    <div className="fixed inset-0 z-40 flex overflow-y-auto bg-ink/35 p-4 backdrop-blur-[2px] short:p-2" role="dialog" aria-label="오늘의 미션">
+    <div className="fixed inset-0 z-40 flex overflow-y-auto bg-ink/35 p-4 backdrop-blur-[2px] short:p-2 portrait:pt-[calc(1rem_+_var(--cam))]" role="dialog" aria-label="오늘의 미션">
       <div className="glass relative m-auto w-full max-w-4xl rounded-[2.2rem] p-5 short:rounded-[1.6rem] short:p-3 portrait:p-4">
         <button type="button" aria-label="닫기" onClick={onClose} className="absolute right-3 top-3 grid h-12 w-12 place-items-center rounded-full bg-white text-2xl text-ink-soft shadow active:scale-90">
           <UiIcon name="close" />

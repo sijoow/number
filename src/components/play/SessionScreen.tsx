@@ -124,7 +124,7 @@ export default function SessionScreen() {
     return (
       <main className="relative flex h-dvh flex-col overflow-hidden">
         <Backdrop />
-        <header className="relative z-10 flex items-center justify-between gap-4 px-5 pt-4 portrait:gap-2 portrait:px-3 portrait:pt-3">
+        <header className="relative z-10 flex items-center justify-between gap-4 px-5 pt-4 portrait:gap-2 portrait:px-3 portrait:pt-[calc(0.75rem_+_var(--cam))]">
           <button
             type="button"
             className="glass grid h-14 w-14 shrink-0 place-items-center rounded-full text-2xl font-extrabold text-ink-soft transition-transform active:scale-90 portrait:h-12 portrait:w-12 portrait:text-xl"
@@ -235,13 +235,13 @@ export default function SessionScreen() {
       <Backdrop />
       <button
         type="button"
-        className="glass absolute left-5 top-4 z-10 grid h-14 w-14 place-items-center rounded-full text-3xl transition-transform active:scale-90 portrait:left-3 portrait:top-3 portrait:h-12 portrait:w-12"
+        className="glass absolute left-5 top-4 z-10 grid h-14 w-14 place-items-center rounded-full text-3xl transition-transform active:scale-90 portrait:left-3 portrait:top-[calc(0.75rem_+_var(--cam))] portrait:h-12 portrait:w-12"
         onClick={goHome}
         aria-label="집으로"
       >
         <UiIcon name="home" />
       </button>
-      {preview && <div className="glass absolute right-6 top-5 z-10 rounded-full px-5 py-2 font-body text-lg portrait:right-3 portrait:top-3 portrait:text-sm">미리 보기 · 진도에 남지 않아요</div>}
+      {preview && <div className="glass absolute right-6 top-5 z-10 rounded-full px-5 py-2 font-body text-lg portrait:right-3 portrait:top-[calc(0.75rem_+_var(--cam))] portrait:text-sm">미리 보기 · 진도에 남지 않아요</div>}
       <div className="relative flex flex-col items-center gap-6 py-6">
         <Guide size={190} className="animate-float" />
         {live ? (

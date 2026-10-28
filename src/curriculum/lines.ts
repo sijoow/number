@@ -94,6 +94,7 @@ export const LINES = {
   free: `${call}, 무슨 놀이를 해 볼까?`,
   friends: `${call}, 숫자 친구들을 만나 볼까?`,
   friendLocked: "아직 못 만난 친구야. 오늘의 놀이에서 만나자!",
+  transform: "변신!",
   write: `${call}, 어떤 숫자를 써 볼까?`,
   next: "다음!",
 
@@ -106,9 +107,10 @@ export const LINES = {
   missions: "오늘의 미션이야! 하나씩 해 볼까?",
   missionStampAsk: "미션을 다 했어! 도장을 눌러 봐!",
   missionAll: "미션 완료! 도장 쾅! 블록 세 개 받았어!",
-  tower: `${call}, 블록으로 탑을 쌓아 볼까?`,
-  towerDrag: "블록을 끌어서 탑 위에 올려 봐!",
-  towerFloor: "한 층 완성! 새 친구가 이사 왔어!",
+  // 친구 집 짓기(2026-10-28 블록 탑에서 바뀜) — 짓는 집 안내는 buildAsk(n), 다 지으면 meetBlocks(n) · towerHouse · meetHello(n)
+  tower: `${call}, 블록으로 친구 집을 지어 볼까?`,
+  towerRule: "숫자 친구는 자기 숫자만큼 블록으로 집을 지어!",
+  towerHouse: "집 완성! 친구가 이사 왔어!",
   towerEmpty: "블록이 다 떨어졌어! 놀이를 하면 블록이 생겨.",
   challenge: "도전! 조금 어려운 문제야!",
   challengeWin: "도전 성공! 블록 하나 더!",

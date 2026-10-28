@@ -22,7 +22,7 @@ export const MENUS: Menu[] = [
   { id: "friends", href: "/friends", title: "숫자 친구", icon: "🧱", tone: "butter" },
   { id: "write", href: "/write", title: "숫자 쓰기", icon: "✏️", tone: "mint" },
   // 모은 블록으로 탑 쌓기(2026-10-28 사용자) — 그림은 블록 아이콘(lib/assets UI_ART 🧱)
-  { id: "tower", href: "/tower", title: "블록 탑", icon: "🧱", tone: "peach" },
+  { id: "tower", href: "/tower", title: "친구 집 짓기", icon: "🏠", tone: "peach" },
 ];
 
 export function menuOf(id: MenuId): Menu {

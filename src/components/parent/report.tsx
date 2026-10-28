@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { CheckMark, toneStyle, UiIcon } from "@/components/ui";
 import { CHAPTERS, chapterOf } from "@/curriculum/course";
 import { FRIENDS } from "@/curriculum/friends";
-import type { Family } from "@/lib/hangul";
+import type { Family, Orientation } from "@/lib/hangul";
 import { currentSession, daysBefore, initialProgress, progressRate, restartAt, type DayStat, type DoneRecord, type Progress } from "@/lib/progress";
 import { WEEKDAYS } from "@/lib/schedule";
 import type { Saved } from "@/lib/store";
@@ -244,15 +244,18 @@ export function RecordTable({ history }: { history: DoneRecord[] }) {
   );
 }
 
-/** 한글나라에서 받아온 설정 — 여기서는 보기만(바꾸는 곳은 한글나라 부모 페이지) */
-export function FamilyCard({ family, name }: { family: Family; name?: string }) {
+const VIEW_LABEL: Record<Orientation, string> = { portrait: "세로 모드", landscape: "가로 모드" };
+
+/** 한글나라에서 받아온 설정 — 여기서는 보기만(바꾸는 곳은 한글나라 부모 페이지). own = 숫자놀이에서 따로 정한 화면 보기 */
+export function FamilyCard({ family, name, own }: { family: Family; name?: string; own?: Orientation | null }) {
   const days = family.studyDays.length === 7 ? "매일" : family.studyDays.map((d) => WEEKDAYS[d]).join("·");
   const voice = VOICES.find((v) => v.id === family.voice)?.name ?? family.voice;
   return (
     <Card title={name ? `한글나라에서 받아온 설정 — ${name}` : "한글나라에서 받아온 설정"}>
       <ul className="grid gap-2 sm:grid-cols-2">
         <li className="rounded-2xl bg-paper px-4 py-3">
-          화면 보기 <b>{family.orientation === "portrait" ? "세로 모드" : "가로 모드"}</b>
+          화면 보기 <b>{VIEW_LABEL[family.orientation]}</b>
+          {own && <span className="text-base text-ink-soft"> · 숫자놀이는 {VIEW_LABEL[own]}로 따로 정함</span>}
         </li>
         <li className="rounded-2xl bg-paper px-4 py-3">
           공부하는 요일 <b>{days}</b>
@@ -270,18 +273,33 @@ export function FamilyCard({ family, name }: { family: Family; name?: string }) 
           : !family.found
             ? "한글나라에 이 아이디 기록이 없어서 기본값(세로·매일·수아)이에요."
             : `마지막으로 받은 때 ${new Date(family.at).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}.`}{" "}
-        바꾸려면 한글나라 부모 페이지에서 바꿔 주세요 — 숫자놀이도 다음에 열 때 따라와요.
+        바꾸려면 한글나라 부모 페이지에서 바꿔 주세요 — 숫자놀이도 다음에 열 때 따라와요. 화면 보기는 「프로그램 관리」에서 숫자놀이만 따로 정할 수도 있어요.
       </p>
     </Card>
   );
 }
 
 /**
- * 프로그램 관리 — 하루 한 번, 오늘 한 판 더, 시작 장, 진도 초기화.
+ * 프로그램 관리 — 화면 보기, 하루 한 번, 오늘 한 판 더, 시작 장, 진도 초기화.
  * 내 진도에는 기기 저장(updateSaved), 아이 진도에는 서버 저장(관리자 화면)을 change 로 넘긴다.
+ * hangulView = 한글나라 화면 보기(숫자놀이에서 안 정했을 때 쓰는 값). 바꾸면 그 기기는 lib/orientation 이 바로 고정한다.
  */
-export function ProgramControls({ saved, today, change, who }: { saved: Saved; today: string; change: (fn: (s: Saved) => Saved) => void; who: string }) {
+export function ProgramControls({
+  saved,
+  today,
+  change,
+  who,
+  hangulView,
+}: {
+  saved: Saved;
+  today: string;
+  change: (fn: (s: Saved) => Saved) => void;
+  who: string;
+  hangulView?: Orientation;
+}) {
   const { progress, settings } = saved;
+  const view = settings.orientation ?? hangulView;
+  const setView = (orientation: Orientation | null) => change((s) => ({ ...s, settings: { ...s.settings, orientation } }));
   const played = progress.lastPlayedOn === today && progress.extraOn !== today;
   const restart = (c: number) => {
     if (!window.confirm(`${who} — ${c}장부터 다시 시작할까요? 오늘의 놀이 진도가 ${c}장 1일로 바뀌어요. (블록·기록·친구·도장은 남아요)`)) return;
@@ -289,7 +307,34 @@ export function ProgramControls({ saved, today, change, who }: { saved: Saved; t
   };
   return (
     <Card title="프로그램 관리">
-      <label className="flex items-center justify-between gap-4">
+      <p>화면 보기</p>
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        {(["portrait", "landscape"] as const).map((o) => (
+          <button
+            key={o}
+            type="button"
+            aria-pressed={view === o}
+            onClick={() => setView(o)}
+            className="squish flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-display text-xl"
+            style={view === o ? toneStyle("sky") : undefined}
+          >
+            <UiIcon name={o} /> {VIEW_LABEL[o]}
+          </button>
+        ))}
+      </div>
+      <p className="mt-3 text-base text-ink-soft">
+        {settings.orientation ? (
+          <>
+            숫자놀이에서 따로 정했어요.{" "}
+            <button type="button" className="underline" onClick={() => setView(null)}>
+              한글나라 설정{hangulView ? `(${VIEW_LABEL[hangulView]})` : ""} 따르기
+            </button>
+          </>
+        ) : (
+          "지금은 한글나라 설정대로 보여요 — 고르면 숫자놀이만 그 방향으로 보여요."
+        )}
+      </p>
+      <label className="mt-5 flex items-center justify-between gap-4">
         <span>하루 한 번만</span>
         <input
           type="checkbox"
@@ -310,7 +355,7 @@ export function ProgramControls({ saved, today, change, who }: { saved: Saved; t
       <p className="mt-5 text-base text-ink-soft">시작 장 바꾸기 — 앞 장의 숫자 친구는 만난 것으로 쳐요</p>
       <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
         {CHAPTERS.map((c) => (
-          <button key={c.no} type="button" onClick={() => restart(c.no)} className={`squish rounded-2xl p-3 text-left ${progress.chapter === c.no ? "ring-4 ring-sky-deep" : ""}`}>
+          <button key={c.no} type="button" onClick={() => restart(c.no)} className="squish rounded-2xl p-3 text-left" style={progress.chapter === c.no ? toneStyle("sky") : undefined}>
             <p className="flex items-center gap-1 font-display text-lg">
               {progress.stamps.includes(c.no) && <CheckMark on className="h-5 w-5 text-xs" />}
               {c.no}장

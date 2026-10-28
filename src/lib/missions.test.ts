@@ -11,7 +11,6 @@ import {
   blocksFor,
   checkIn,
   claimMissions,
-  FLOOR_BLOCKS,
   finishGame,
   initialProgress,
   normalizeProgress,
@@ -20,6 +19,8 @@ import {
   restartAt,
   TRAIN_CARS,
   trainOf,
+  VILLAGE_BLOCKS,
+  villageOf,
   wallet,
   type Progress,
 } from "./progress.ts";
@@ -47,19 +48,27 @@ test("출석 기차 — 하루 한 번, 일곱째 날 기차 출발 + 블록, �
   assert.deepEqual(trainOf(next.next, dayN(20)), { count: 8, checked: true, train: 2, boarded: 1 });
 });
 
-test("블록 탑 — 남은 블록만 쌓고, 열 개마다 한 층", () => {
-  let p: Progress = { ...initialProgress(), blocks: FLOOR_BLOCKS + 2 };
-  let floors = 0;
-  for (let i = 1; i <= FLOOR_BLOCKS + 2; i++) {
+test("친구 집 짓기 — 친구 숫자만큼 블록이 한 집(일 1 · 이 2 · 삼 3 …), 남은 블록만 쓴다", () => {
+  let p: Progress = { ...initialProgress(), blocks: 8 };
+  const done: number[] = [];
+  for (let i = 1; i <= 8; i++) {
     const res = placeBlock(p);
     assert.equal(res.placed, i);
-    if (res.floorDone) floors++;
+    if (res.houseDone) done.push(res.houseDone);
     p = res.next;
   }
-  assert.equal(floors, 1);
+  // 1 → 일, 1+2 = 3 → 이, 1+2+3 = 6 → 삼, 남은 둘은 사 집에
+  assert.deepEqual(done, [1, 2, 3]);
+  assert.deepEqual(villageOf(p.towerPlaced), { village: 1, built: 3, current: 4, have: 2 });
   assert.equal(wallet(p), 0);
   // 블록이 없으면 그대로
   assert.equal(placeBlock(p).next, p);
+  // 이십까지 다 지으면(210개) 새 마을의 일부터
+  assert.equal(VILLAGE_BLOCKS, 210);
+  assert.deepEqual(villageOf(VILLAGE_BLOCKS - 1), { village: 1, built: 19, current: 20, have: 19 });
+  const last = placeBlock({ ...initialProgress(), blocks: VILLAGE_BLOCKS, towerPlaced: VILLAGE_BLOCKS - 1 });
+  assert.equal(last.houseDone, 20);
+  assert.deepEqual(villageOf(last.placed), { village: 2, built: 0, current: 1, have: 0 });
 });
 
 test("도전 판 — 오늘의 놀이 날만(도장 날은 그대로), 범위 안의 수", () => {

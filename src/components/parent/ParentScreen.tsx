@@ -46,7 +46,7 @@ function SyncCard() {
         지금 맞추기
       </button>
       <p className="mt-3 text-base text-ink-soft">
-        숫자놀이 진도·기록은 아이디마다 문서 하나로 저장돼요(DB haonnumber · progress). 계정과 화면 방향·공부 요일·성우는 한글나라 DB(todohangul)에서 읽기만 해요 — 한글나라 진도는 건드리지 않아요.
+        숫자놀이 진도·기록은 아이디마다 문서 하나로 저장돼요(DB haonnumber · progress). 계정과 공부 요일·성우·화면 방향(숫자놀이에서 따로 안 정했을 때)은 한글나라 DB(todohangul)에서 읽기만 해요 — 한글나라 진도는 건드리지 않아요.
       </p>
     </Card>
   );
@@ -65,7 +65,7 @@ export default function ParentScreen() {
   const master = auth.user.role === "master";
 
   return (
-    <main className="min-h-dvh bg-paper px-5 py-6 lg:px-10">
+    <main className="min-h-dvh bg-paper px-5 py-6 pt-[calc(1.5rem_+_var(--cam))] lg:px-10">
       <div className="mx-auto flex max-w-5xl flex-col gap-5">
         <header className="flex items-center justify-between gap-3 print:hidden">
           <h1 className="font-display text-4xl">{master ? "관리자 페이지" : "부모 페이지"}</h1>
@@ -104,7 +104,7 @@ export default function ParentScreen() {
 
         {master && <AdminPanel today={today} />}
 
-        <FamilyCard family={family} />
+        <FamilyCard family={family} own={saved.settings.orientation} />
 
         <ScheduleCard saved={saved} today={today} studyDays={family.studyDays} change={(fn) => updateSaved(fn)} />
 
@@ -115,7 +115,7 @@ export default function ParentScreen() {
           <ReportCard daily={progress.daily} today={today} />
         </div>
 
-        <ProgramControls saved={saved} today={today} who={`@${auth.user.id}`} change={(fn) => updateSaved(fn)} />
+        <ProgramControls saved={saved} today={today} who={`@${auth.user.id}`} hangulView={family.orientation} change={(fn) => updateSaved(fn)} />
 
         <div className="grid gap-5 lg:grid-cols-2">
           <StampCard history={progress.history} stamps={progress.stamps} />

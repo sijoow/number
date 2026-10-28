@@ -4,7 +4,8 @@
  *   progress.{아이디}.settings        voice · orientation · studyDays · startOn
  *   progress.{아이디}.progress.firstOn 한글나라를 처음 한 날
  * 2026-10-27 사용자 결정: 로그인 계정과 아이 정보·설정은 한글나라 것을 받아 쓴다(연결 = 같은 MongoDB 직접).
- * 그래서 화면 방향·공부하는 요일·성우는 숫자놀이에서 바꾸지 않는다 — 한글나라 부모 페이지에서 바꾸면 따라온다.
+ * 그래서 공부하는 요일·성우는 숫자놀이에서 바꾸지 않는다 — 한글나라 부모 페이지에서 바꾸면 따라온다.
+ * 화면 방향만은 숫자놀이 부모 페이지에서 따로 정할 수도 있다(2026-10-28 사용자, lib/progress Settings.orientation) — 안 정했으면 이 값.
  * 서버(app/api/family)와 기기(lib/family)가 같이 쓰는 모양·검사. 순수 파일 — node --test 가 그대로 읽는다.
  */
 

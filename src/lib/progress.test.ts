@@ -12,6 +12,7 @@ import {
   finishGame,
   initialProgress,
   normalizeProgress,
+  normalizeSettings,
   progressRate,
   restartAt,
   topNumber,
@@ -87,6 +88,10 @@ test("하루 한 번 — 하나 더 열기", () => {
   assert.equal(canPlayToday({ ...p, extraOn: DAY }, DEFAULT_SETTINGS, DAY), true);
   assert.equal(canPlayToday(p, { ...DEFAULT_SETTINGS, oneADay: false }, DAY), true);
   assert.equal(canPlayToday(p, DEFAULT_SETTINGS, "2026-10-28"), true);
+  // 화면 보기 — 정한 방향만 남고, 예전 설정(칸 없음)·잘못된 값은 한글나라 따르기(null)
+  assert.equal(normalizeSettings({ ...DEFAULT_SETTINGS, orientation: "landscape" }).orientation, "landscape");
+  assert.equal(normalizeSettings({ v: 1, oneADay: false, startOn: null }).orientation, null);
+  assert.equal(normalizeSettings({ ...DEFAULT_SETTINGS, orientation: "sideways" }).orientation, null);
   // '하나 더'를 쓰고 나면 닫힌다
   const again = play({ ...p, extraOn: DAY }).next;
   assert.equal(again.extraOn, null);

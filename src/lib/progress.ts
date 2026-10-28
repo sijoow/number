@@ -8,7 +8,8 @@
  *       출석 기차 — 하루 한 번 출석, 일곱 번이면 기차 출발 + 블록 7개(빠진 날이 있어도 끊기지 않고 이어 탄다)
  *       오늘의 미션 — 셋을 다 하면 COMPLETE 도장 + 블록 3개(무엇을 할지는 lib/missions)
  *       도전 판 — 오늘의 놀이 마지막 판을 처음에 맞히면 블록 1개 더(lib/rounds withChallenge)
- *       블록 탑 — 모은 블록을 탑에 쌓는다. blocks 는 모은 블록 전부, 남은 블록 = blocks − towerPlaced, 10개가 한 층
+ *       친구 집 짓기 — 모은 블록으로 숫자 친구 집을 짓는다. 친구 숫자만큼 블록이 한 집(일 1개, 이 2개 … 이십 20개 — 숫자 계단).
+ *         blocks 는 모은 블록 전부, 남은 블록 = blocks − towerPlaced. 스물까지 다 지으면(210개) 새 마을을 일부터 다시
  * 저장·불러오기는 lib/store.ts(기기) · lib/sync.ts(MongoDB), 여기는 계산만.
  * 순수 파일 — node --test 가 그대로 읽는다.
  */
@@ -16,6 +17,7 @@
 import { CHAPTERS, chapterOf, DAYS_PER_CHAPTER, dayPlan, PASS_RATE, practicePlan, STAMP_TRIES, TOTAL_DAYS } from "../curriculum/course.ts";
 import { MAX_NUMBER } from "../curriculum/numbers.ts";
 import type { DayPlan } from "../curriculum/types.ts";
+import type { Orientation } from "./hangul.ts";
 
 export const BLOCK_PER_ACTIVITY = 1;
 export const BLOCK_PER_DAY = 3;
@@ -25,7 +27,8 @@ export const TRAIN_CARS = 7;
 export const BLOCK_TRAIN = 7;
 export const BLOCK_MISSION = 3;
 export const BLOCK_CHALLENGE = 1;
-export const FLOOR_BLOCKS = 10;
+/** 친구 집 스무 채(일 1개 + 이 2개 + … + 이십 20개) = 마을 하나 */
+export const VILLAGE_BLOCKS = (MAX_NUMBER * (MAX_NUMBER + 1)) / 2;
 const ATTEND_KEEP = 3000;
 const HISTORY_MAX = 400;
 const DAILY_KEEP = 120;
@@ -86,7 +89,7 @@ export interface Progress {
   firstOn: string | null;
   /** 출석한 날(출석 기차) — 하루 한 번 */
   attend: string[];
-  /** 블록 탑에 쌓은 블록 수 — 남은 블록 = blocks − towerPlaced */
+  /** 친구 집 짓기에 쓴 블록 수 — 남은 블록 = blocks − towerPlaced (2026-10-28 블록 탑에서 바뀜, 값은 그대로 이어 쓴다) */
   towerPlaced: number;
   /** 오늘의 미션을 다 해서 COMPLETE 도장을 받은 날 */
   missionDays: string[];
@@ -94,13 +97,15 @@ export interface Progress {
   wrote: { on: string; nums: number[] } | null;
 }
 
-/** 숫자놀이만의 설정 — 화면 방향·공부 요일·성우는 한글나라 설정을 따른다(lib/hangul) */
+/** 숫자놀이만의 설정 — 공부 요일·성우는 한글나라 설정을 따른다(lib/hangul). 화면 방향은 여기서 따로 정할 수도 있다 */
 export interface Settings {
   v: 1;
   /** 하루 한 번만 (마스터 아이디는 제한 없음) */
   oneADay: boolean;
   /** 숫자놀이를 시작한 날을 부모가 고쳤으면 그 날 — null 이면 처음 한 날(progress.firstOn) */
   startOn: string | null;
+  /** 화면 보기를 숫자놀이에서 정했으면 그 방향(2026-10-28 사용자) — null 이면 한글나라 설정 그대로(lib/orientation) */
+  orientation: Orientation | null;
 }
 
 export interface SessionRef {
@@ -143,7 +148,7 @@ export function initialProgress(chapter = 1): Progress {
   };
 }
 
-export const DEFAULT_SETTINGS: Settings = { v: 1, oneADay: true, startOn: null };
+export const DEFAULT_SETTINGS: Settings = { v: 1, oneADay: true, startOn: null, orientation: null };
 
 /** 지금 할 하루 — 연습 놀이가 끼어 있으면 그것. 과정을 다 마쳤으면 null */
 export function currentSession(p: Progress): SessionRef | null {
@@ -276,16 +281,31 @@ export function checkIn(p: Progress, today: string): { next: Progress; car: numb
   return { next: earned ? logPlay(next, today, { earned }) : next, car, departed, earned };
 }
 
-/** 남은 블록 — 탑에 쌓은 만큼 빠진다 */
+/** 남은 블록 — 친구 집에 쓴 만큼 빠진다 */
 export function wallet(p: Progress): number {
   return Math.max(0, p.blocks - p.towerPlaced);
 }
 
-/** 블록 탑에 하나 쌓기 — floorDone 은 방금 다 지은 층(1부터), 아니면 0 */
-export function placeBlock(p: Progress): { next: Progress; placed: number; floorDone: number } {
-  if (wallet(p) <= 0) return { next: p, placed: p.towerPlaced, floorDone: 0 };
+/**
+ * 쓴 블록으로 본 마을 — village 몇 번째 마을(1부터), built 다 지은 집 수(일·이·… 차례로), current 짓는 중인 친구, have 그 집에 놓은 블록 수.
+ * 예) 쓴 블록 5개 = 일(1) + 이(2) 다 짓고, 삼 집에 2개
+ */
+export function villageOf(placed: number): { village: number; built: number; current: number; have: number } {
+  let have = placed % VILLAGE_BLOCKS;
+  let current = 1;
+  while (have >= current) {
+    have -= current;
+    current++;
+  }
+  return { village: Math.floor(placed / VILLAGE_BLOCKS) + 1, built: current - 1, current, have };
+}
+
+/** 친구 집에 블록 하나 — houseDone 은 방금 다 지은 집의 친구(1~20), 아니면 0 */
+export function placeBlock(p: Progress): { next: Progress; placed: number; houseDone: number } {
+  if (wallet(p) <= 0) return { next: p, placed: p.towerPlaced, houseDone: 0 };
+  const before = villageOf(p.towerPlaced);
   const placed = p.towerPlaced + 1;
-  return { next: { ...p, towerPlaced: placed }, placed, floorDone: placed % FLOOR_BLOCKS === 0 ? placed / FLOOR_BLOCKS : 0 };
+  return { next: { ...p, towerPlaced: placed }, placed, houseDone: before.have + 1 === before.current ? before.current : 0 };
 }
 
 /** 숫자 하나를 다 썼다 — 쓰기 미션 확인용(그날 쓴 숫자만 남긴다) */
@@ -401,5 +421,6 @@ export function normalizeSettings(raw: unknown): Settings {
     v: 1,
     oneADay: typeof o.oneADay === "boolean" ? o.oneADay : DEFAULT_SETTINGS.oneADay,
     startOn: isDay(o.startOn) ? o.startOn : null,
+    orientation: o.orientation === "portrait" || o.orientation === "landscape" ? o.orientation : null,
   };
 }

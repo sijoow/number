@@ -26,8 +26,8 @@ import { TodayBoard, TrainEngine } from "./TodayBoard";
  * 첫 화면 — 한글나라 새 화면과 같은 틀(사용자가 "지금 아주 좋아"라고 한 구성).
  *   위    하온이 이름표 · 블록 · 부모 문(꾹)
  *   가운데 안내 친구(누르면 이름을 불러 준다) + 「오늘의 놀이」 카드 하나 — 장 제목, 이번 장 하루하루 점, 시작 버튼
- *   아래  유리 메뉴 바 — 놀이터 · 숫자 놀이 · 숫자 친구 · 숫자 쓰기 · 블록 탑(curriculum/menus)
- * 하루하루 재미 장치(2026-10-28 사용자): 오늘의 미션 판(출석 기차 + 미션 셋, 하루 첫 방문·도장 받을 때 저절로) · 블록 → 블록 탑 ·
+ *   아래  유리 메뉴 바 — 놀이터 · 숫자 놀이 · 숫자 친구 · 숫자 쓰기 · 친구 집 짓기(curriculum/menus)
+ * 하루하루 재미 장치(2026-10-28 사용자): 오늘의 미션 판(출석 기차 + 미션 셋, 하루 첫 방문·도장 받을 때 저절로) · 블록 → 친구 집 짓기 ·
  * 이번 장 하루하루는 계단(하온이가 하루에 한 칸씩 올라 5일째 꼭대기 도장) · 안내 친구 자리에 날마다 다른 「오늘의 친구」.
  * 가로 화면은 친구(왼쪽) · 카드(오른쪽), 세로 화면은 위아래.
  */
@@ -207,7 +207,7 @@ export default function HomeScreen() {
       {/* 위쪽 하늘을 살짝 밝게 — 이름표·숫자가 바탕에 묻히지 않게 */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-white/45 to-transparent" />
 
-      <header className="relative z-10 flex items-center justify-between gap-2 px-5 pt-4 short:px-4 short:pt-2 portrait:px-3 portrait:pt-3">
+      <header className="relative z-10 flex items-center justify-between gap-2 px-5 pt-4 short:px-4 short:pt-2 portrait:px-3 portrait:pt-[calc(0.75rem_+_var(--cam))]">
         <NameTag sub={chapter ? `${chapter.no}장 · ${chapter.title}` : "모든 장을 마쳤어요"} master={master} />
         <div className="flex items-center gap-2 portrait:gap-1.5">
           {/* 오늘의 미션 판 다시 열기 — 기관차 + 미션 셋 점 */}
@@ -228,7 +228,7 @@ export default function HomeScreen() {
               ))}
             </span>
           </button>
-          <button type="button" aria-label="블록 탑" onClick={() => goto("/tower")}>
+          <button type="button" aria-label="친구 집 짓기" onClick={() => goto("/tower")}>
             <BlockCount n={wallet(progress)} />
           </button>
           <ParentGate />

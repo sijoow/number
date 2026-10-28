@@ -3,9 +3,11 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useFamily } from "@/lib/family";
 import type { Orientation } from "@/lib/hangul";
+import { useSaved } from "@/lib/store";
 
 /*
- * 화면 보기(세로 모드 · 가로 모드) — 한글나라 부모 설정(settings.orientation, 처음엔 세로)을 받아 그대로 보이게 한다(lib/family).
+ * 화면 보기(세로 모드 · 가로 모드) — 숫자놀이 부모 페이지에서 정한 방향(settings.orientation, 2026-10-28 사용자), 안 정했으면
+ * 한글나라 부모 설정(처음엔 세로, lib/family)대로 보이게 한다.
  *   설치한 앱(홈 화면 앱·TWA)  screen.orientation.lock 으로 바로 고정
  *   폰·태블릿 브라우저(웹 모바일)  브라우저는 전체 화면일 때만 방향을 고정해 준다 → 화면을 처음 누를 때 전체 화면 + 고정
  *     (2026-10-26 사용자: 한 번 정하면 다음부터 그 모드로 보이게 — 웹 모바일만)
@@ -61,16 +63,23 @@ export function usePortrait(): boolean {
   );
 }
 
+/** 지금 쓰는 화면 보기 — 숫자놀이에서 정한 방향, 없으면 한글나라 설정 */
+export function useOrientation(): Orientation {
+  const own = useSaved()?.settings.orientation;
+  const hangul = useFamily().orientation;
+  return own ?? hangul;
+}
+
 /** 로그인한 동안 설정한 보기를 지킨다 — AuthGate 가 띄운다 */
 export function OrientationBoot() {
-  const want = useFamily().orientation;
+  const want = useOrientation();
   const portrait = usePortrait();
   const mobile = useSyncExternalStore(noop, mobileWeb, () => false);
   const [keep, setKeep] = useState(false);
 
-  // 설치한 앱은 사용자 동작 없이도 고정된다 — 켤 때와 설정이 바뀔 때
+  // 설치한 앱·이미 전체 화면이면 사용자 동작 없이도 고정된다 — 켤 때와 설정이 바뀔 때(부모 페이지에서 바꾸면 바로)
   useEffect(() => {
-    if (want && installed()) void lock(want);
+    if (want && (installed() || document.fullscreenElement)) void lock(want);
   }, [want]);
 
   // 웹 모바일 — 처음 누를 때 전체 화면 + 고정. 전체 화면에서 나왔는데 방향이 다르면 다음에 누를 때 다시

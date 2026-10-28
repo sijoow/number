@@ -36,7 +36,7 @@ export function ModeShell({
   return (
     <main className="relative flex h-dvh flex-col overflow-hidden">
       <Backdrop scene={scene} />
-      <header className="relative z-10 flex items-center justify-between gap-4 px-5 pt-4 portrait:gap-2 portrait:px-3 portrait:pt-3">
+      <header className="relative z-10 flex items-center justify-between gap-4 px-5 pt-4 portrait:gap-2 portrait:px-3 portrait:pt-[calc(0.75rem_+_var(--cam))]">
         <button
           type="button"
           className="glass grid h-14 w-14 shrink-0 place-items-center rounded-full text-3xl text-ink transition-transform active:scale-90 portrait:h-12 portrait:w-12 portrait:text-2xl"

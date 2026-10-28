@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
+import { toneStyle } from "@/components/ui";
 import { chapterOf } from "@/curriculum/course";
 import { authHeaders } from "@/lib/auth";
 import { fetchFamilyOf } from "@/lib/family";
@@ -106,7 +107,7 @@ export function AdminPanel({ today }: { today: string }) {
         {list?.children.map((c) => {
           const p = c.saved?.progress;
           return (
-            <button key={c.id} type="button" onClick={() => setSel(sel === c.id ? null : c.id)} className={`squish rounded-2xl p-4 text-left ${sel === c.id ? "ring-4 ring-sky-deep" : ""}`}>
+            <button key={c.id} type="button" onClick={() => setSel(sel === c.id ? null : c.id)} className="squish rounded-2xl p-4 text-left" style={sel === c.id ? toneStyle("sky") : undefined}>
               <p className="font-display text-xl">
                 {c.name} <span className="text-base text-ink-soft">@{c.id}</span>
               </p>
@@ -131,7 +132,7 @@ export function AdminPanel({ today }: { today: string }) {
           <p className="font-display text-2xl">
             {child.name} <span className="text-lg text-ink-soft">@{child.id}</span>
           </p>
-          {fam && <FamilyCard family={fam} name={child.name} />}
+          {fam && <FamilyCard family={fam} name={child.name} own={child.saved?.settings.orientation} />}
           {child.saved ? (
             <>
               <div className="rounded-2xl bg-card p-4">
@@ -147,7 +148,7 @@ export function AdminPanel({ today }: { today: string }) {
             <p className="text-ink-soft">이 아이디로 아직 숫자놀이를 한 적이 없어요. 아래에서 시작 장을 정해 둘 수 있어요.</p>
           )}
           {list?.db && <ScheduleCard saved={child.saved ?? emptySaved()} today={today} studyDays={fam?.studyDays ?? [0, 1, 2, 3, 4, 5, 6]} name={child.name} change={(fn) => void change(child.id, fn)} />}
-          {list?.db && <ProgramControls saved={child.saved ?? emptySaved()} today={today} who={child.name} change={(fn) => void change(child.id, fn)} />}
+          {list?.db && <ProgramControls saved={child.saved ?? emptySaved()} today={today} who={child.name} hangulView={fam?.orientation} change={(fn) => void change(child.id, fn)} />}
         </div>
       )}
     </Card>
