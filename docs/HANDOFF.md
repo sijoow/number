@@ -49,7 +49,7 @@ Vercel 에는 `MONGODB_URI` `MONGO_DB` `ACCOUNTS` `AUTH_SECRET` `CAFE24_PUBLIC_B
 - **따라 쓰기 판**: `components/TraceBoard.tsx` — 글자 대신 숫자(0~9)도 그대로 된다.
 - **진도·로그인·동기화**: `lib/progress.ts`(단원·일·복습·반딧불이·미션·은하계·일일 기록), `lib/store.ts`·`sync.ts`·`auth.ts`, `app/api/*`. 마스터 계정 **fe / 1234**(관리자), 아이 계정은 관리자 페이지에서.
 - **하온이 스케줄**(부모 페이지): `lib/schedule.ts` + `components/parent/schedule.tsx` — 온 지 며칠째, 달력 도장, 앞으로의 모험, 공부하는 요일.
-- **화면 방향**: `lib/orientation.tsx` — 부모 설정 「화면 보기: 세로 모드/가로 모드」(기본 세로). 숫자놀이는 부모 페이지 「프로그램 관리」에서 따로 정할 수 있고(`settings.orientation`, 없으면 한글나라 값), 세로 앱 화면에선 위 틀을 카메라 자리(`--cam`, globals.css)만큼 내린다. 설치 앱은 바로 고정, 폰 브라우저는 첫 터치 때 전체 화면 + 고정, 안 되면 "돌려 주세요" 안내.
+- **화면 방향**: `lib/orientation.tsx` — 부모 설정 「화면 보기: 세로 모드/가로 모드」(기본 세로). 숫자놀이는 부모 페이지 「프로그램 관리」에서 따로 정할 수 있고(`settings.orientation`, 없으면 한글나라 값), 세로 화면에선 위 틀을 위에서 40px(카메라 자리가 더 크면 그만큼, `--cam` globals.css) 띄운다. 설치 앱은 바로 고정, 폰 브라우저는 첫 터치 때 전체 화면 + 고정, 안 되면 "돌려 주세요" 안내.
 - **잘림 방지**(2026-10-27 사용자 테스트에서 발견해 고침): 화면 틀(ModeShell·SessionScreen)의 내용 칸은 `overflow-y-auto`, 가운데 정렬은 `justify-center-safe`/`items-center-safe`/`content-center-safe`(넘치면 위부터), 스크롤 목록은 `.scroll-fade`. 세로 폰에서 메뉴는 **한 줄에 2개씩**(사용자 지시).
 - **그림 목록·호스팅**: `src/content/image-manifest.json`(키 → 파일, 값 끝 `?v=내용해시` — Cafe24 앞단 캐시 2시간·브라우저 7일 때문), `lib/assets.ts`(일반 그림은 Cafe24 주소 직접, 캔버스용만 `/cdn/…` → next.config rewrites), `scripts/image-list.mts → image-prompts.mts → (힉스필드) → image-install.mts → image-upload.mts`.
 

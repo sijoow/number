@@ -289,21 +289,16 @@ body {
 }
 
 /*
-  세로 화면의 폰 카메라 자리(2026-10-28 사용자) — 설치한 앱·전체 화면은 화면 맨 위까지 그려서 카메라 구멍이 위 틀을 가린다.
-  그때만 위 틀(header)을 카메라 자리만큼 내린다: 기기가 알려 주는 높이(safe-area), 모르면 24px.
-  브라우저 화면(위에 주소창·상태 표시줄이 따로 있다)·가로 화면·컴퓨터는 0. 쓰는 곳: portrait:pt-[calc(…_+_var(--cam))]
+  세로 화면의 위 틀(header) 자리(2026-10-28 사용자) — 폰 카메라 구멍에 안 가리게, 그리고 사용자가 정한 대로 위에서 40px 쯤 띄운다.
+  위 틀 안쪽 여백(0.75rem)과 더해서 40px — 기기가 알려 주는 카메라 자리(safe-area)가 더 크면 그만큼. 가로 화면은 0.
+  쓰는 곳: portrait:pt-[calc(0.75rem_+_var(--cam))] (위 틀·준비 화면 집 버튼) · 화면을 덮는 판·부모 페이지 위 여백
 */
 :root {
   --cam: 0px;
 }
-@media (orientation: portrait) and (pointer: coarse) and (display-mode: fullscreen), (orientation: portrait) and (pointer: coarse) and (display-mode: standalone) {
+@media (orientation: portrait) {
   :root {
-    --cam: max(env(safe-area-inset-top, 0px), 24px);
-  }
-}
-@media (orientation: portrait) and (pointer: coarse) {
-  :root:fullscreen {
-    --cam: max(env(safe-area-inset-top, 0px), 24px);
+    --cam: max(env(safe-area-inset-top, 0px), calc(40px - 0.75rem));
   }
 }
 
