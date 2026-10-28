@@ -4,6 +4,11 @@
  *   · 5일째 도장 놀이 — 첫 시도 정답 80% 이상이면 도장. 못 받으면 연습 놀이 하루 → 도장 놀이 한 번 더 → 그래도 못 받으면 다음 장
  *   · 블록(보상) — 놀이 하나 1개 + 하루 끝 3개 + 도장 5개, 놀이터는 놀이마다 하루 첫 판만 1개. 쓰지 않고 쌓인다
  *   · 숫자 친구는 그 친구를 만나는 날(meet 놀이)을 끝내면 친구 앨범에 들어온다
+ *   · 재미 장치(2026-10-28 사용자: 하루하루 미션·출석·난이도 — 토도수학의 오늘의 목표·COMPLETE 도장처럼)
+ *       출석 기차 — 하루 한 번 출석, 일곱 번이면 기차 출발 + 블록 7개(빠진 날이 있어도 끊기지 않고 이어 탄다)
+ *       오늘의 미션 — 셋을 다 하면 COMPLETE 도장 + 블록 3개(무엇을 할지는 lib/missions)
+ *       도전 판 — 오늘의 놀이 마지막 판을 처음에 맞히면 블록 1개 더(lib/rounds withChallenge)
+ *       블록 탑 — 모은 블록을 탑에 쌓는다. blocks 는 모은 블록 전부, 남은 블록 = blocks − towerPlaced, 10개가 한 층
  * 저장·불러오기는 lib/store.ts(기기) · lib/sync.ts(MongoDB), 여기는 계산만.
  * 순수 파일 — node --test 가 그대로 읽는다.
  */
@@ -16,6 +21,12 @@ export const BLOCK_PER_ACTIVITY = 1;
 export const BLOCK_PER_DAY = 3;
 export const BLOCK_STAMP = 5;
 export const BLOCK_FREE = 1;
+export const TRAIN_CARS = 7;
+export const BLOCK_TRAIN = 7;
+export const BLOCK_MISSION = 3;
+export const BLOCK_CHALLENGE = 1;
+export const FLOOR_BLOCKS = 10;
+const ATTEND_KEEP = 3000;
 const HISTORY_MAX = 400;
 const DAILY_KEEP = 120;
 
@@ -73,6 +84,14 @@ export interface Progress {
   games: Record<string, GameStat>;
   /** 처음으로 무엇이든 한 날 — 스케줄의 '온 지 며칠째' */
   firstOn: string | null;
+  /** 출석한 날(출석 기차) — 하루 한 번 */
+  attend: string[];
+  /** 블록 탑에 쌓은 블록 수 — 남은 블록 = blocks − towerPlaced */
+  towerPlaced: number;
+  /** 오늘의 미션을 다 해서 COMPLETE 도장을 받은 날 */
+  missionDays: string[];
+  /** 마지막으로 숫자를 쓴 날과 그날 쓴 숫자 — 쓰기 미션 확인 */
+  wrote: { on: string; nums: number[] } | null;
 }
 
 /** 숫자놀이만의 설정 — 화면 방향·공부 요일·성우는 한글나라 설정을 따른다(lib/hangul) */
@@ -96,6 +115,8 @@ export interface SessionResult {
   total: number;
   /** 끝낸 놀이 수 — 블록 계산용 */
   activities: number;
+  /** 도전 판을 처음에 맞힌 수 — 하나에 블록 1개 */
+  bonus?: number;
   ms?: number;
 }
 
@@ -115,6 +136,10 @@ export function initialProgress(chapter = 1): Progress {
     stamps: [],
     games: {},
     firstOn: null,
+    attend: [],
+    towerPlaced: 0,
+    missionDays: [],
+    wrote: null,
   };
 }
 
@@ -147,7 +172,7 @@ export function passedOf(plan: DayPlan, r: SessionResult): boolean | null {
 }
 
 export function blocksFor(plan: DayPlan, r: SessionResult): number {
-  return r.activities * BLOCK_PER_ACTIVITY + BLOCK_PER_DAY + (passedOf(plan, r) ? BLOCK_STAMP : 0);
+  return r.activities * BLOCK_PER_ACTIVITY + BLOCK_PER_DAY + (passedOf(plan, r) ? BLOCK_STAMP : 0) + (r.bonus ?? 0) * BLOCK_CHALLENGE;
 }
 
 /** 그날 만나는 숫자 친구 */
@@ -233,6 +258,49 @@ export function finishGame(p: Progress, gameId: string, ms: number, today: strin
   return { next: logPlay({ ...p, games }, today, { ms, acts: 1, earned }), earned };
 }
 
+/** 출석 기차 지금 모습 — count 지금까지 출석한 날 수, boarded 지금 기차에 탄 친구 수(오늘 일곱째가 탔으면 7 그대로 — 다음 날 새 기차) */
+export function trainOf(p: Progress, today: string): { count: number; checked: boolean; train: number; boarded: number } {
+  const count = p.attend.length;
+  const checked = p.attend.includes(today);
+  const full = count > 0 && count % TRAIN_CARS === 0 && checked;
+  return { count, checked, train: full ? count / TRAIN_CARS : Math.floor(count / TRAIN_CARS) + 1, boarded: full ? TRAIN_CARS : count % TRAIN_CARS };
+}
+
+/** 출석 — 오늘 처음이면 다음 칸(1~7)에 친구가 타고, 일곱째 칸이면 기차 출발 + 블록 */
+export function checkIn(p: Progress, today: string): { next: Progress; car: number; departed: boolean; earned: number } {
+  if (p.attend.includes(today)) return { next: p, car: 0, departed: false, earned: 0 };
+  const car = (p.attend.length % TRAIN_CARS) + 1;
+  const departed = car === TRAIN_CARS;
+  const earned = departed ? BLOCK_TRAIN : 0;
+  const next: Progress = { ...p, attend: [...p.attend, today].sort().slice(-ATTEND_KEEP), firstOn: p.firstOn ?? today };
+  return { next: earned ? logPlay(next, today, { earned }) : next, car, departed, earned };
+}
+
+/** 남은 블록 — 탑에 쌓은 만큼 빠진다 */
+export function wallet(p: Progress): number {
+  return Math.max(0, p.blocks - p.towerPlaced);
+}
+
+/** 블록 탑에 하나 쌓기 — floorDone 은 방금 다 지은 층(1부터), 아니면 0 */
+export function placeBlock(p: Progress): { next: Progress; placed: number; floorDone: number } {
+  if (wallet(p) <= 0) return { next: p, placed: p.towerPlaced, floorDone: 0 };
+  const placed = p.towerPlaced + 1;
+  return { next: { ...p, towerPlaced: placed }, placed, floorDone: placed % FLOOR_BLOCKS === 0 ? placed / FLOOR_BLOCKS : 0 };
+}
+
+/** 숫자 하나를 다 썼다 — 쓰기 미션 확인용(그날 쓴 숫자만 남긴다) */
+export function noteWrite(p: Progress, n: number, today: string): Progress {
+  const nums = p.wrote?.on === today ? [...new Set([...p.wrote.nums, n])].sort((a, b) => a - b) : [n];
+  return { ...p, wrote: { on: today, nums } };
+}
+
+/** 오늘의 미션을 다 했다 — COMPLETE 도장(하루 한 번) + 블록 */
+export function claimMissions(p: Progress, today: string): { next: Progress; earned: number } {
+  if (p.missionDays.includes(today)) return { next: p, earned: 0 };
+  const missionDays = [...p.missionDays, today].sort().slice(-HISTORY_MAX);
+  return { next: logPlay({ ...p, missionDays }, today, { earned: BLOCK_MISSION }), earned: BLOCK_MISSION };
+}
+
 /** 지금 아는 가장 큰 수 — 만난 친구 중 가장 큰 수, 아무도 안 만났으면 3 */
 export function topNumber(p: Progress): number {
   return Math.min(MAX_NUMBER, Math.max(3, ...p.friends));
@@ -299,6 +367,9 @@ export function normalizeProgress(raw: unknown): Progress {
   }
 
   const history = Array.isArray(o.history) ? (o.history.filter((h) => h && typeof h === "object") as DoneRecord[]).slice(-HISTORY_MAX) : [];
+  const days = (v: unknown, keep: number): string[] => (Array.isArray(v) ? [...new Set(v.filter(isDay))].sort().slice(-keep) : []);
+  const blocks = isInt(o.blocks, 0, 10_000_000) ? o.blocks : 0;
+  const w = obj(o.wrote);
   const seen = [...history.map((h) => h.on), ...Object.keys(daily)].filter(isDay).sort();
 
   return {
@@ -307,7 +378,7 @@ export function normalizeProgress(raw: unknown): Progress {
     day,
     practice: o.practice === true && chapter <= CHAPTERS.length,
     tries: isInt(o.tries, 0, STAMP_TRIES) ? o.tries : 0,
-    blocks: isInt(o.blocks, 0, 10_000_000) ? o.blocks : 0,
+    blocks,
     history,
     lastPlayedOn: isDay(o.lastPlayedOn) ? o.lastPlayedOn : null,
     extraOn: isDay(o.extraOn) ? o.extraOn : null,
@@ -316,6 +387,10 @@ export function normalizeProgress(raw: unknown): Progress {
     stamps: nums(o.stamps, 1, CHAPTERS.length),
     games,
     firstOn: isDay(o.firstOn) ? o.firstOn : (seen[0] ?? null),
+    attend: days(o.attend, ATTEND_KEEP),
+    towerPlaced: isInt(o.towerPlaced, 0, blocks) ? o.towerPlaced : 0,
+    missionDays: days(o.missionDays, HISTORY_MAX),
+    wrote: w && isDay(w.on) ? { on: w.on, nums: nums(w.nums, 1, MAX_NUMBER) } : null,
   };
 }
 

@@ -52,7 +52,7 @@ export default function SessionScreen() {
   const [preview] = useState(readPreview);
   const [phase, setPhase] = useState<Phase>(() =>
     preview?.auto
-      ? { name: "playing", ref: preview.ref, built: buildSession(preview.ref.plan, seededRng(1)), idx: preview.step, score: { correct: 0, total: 0, activities: 0 }, startedAt: 0 }
+      ? { name: "playing", ref: preview.ref, built: buildSession(preview.ref.plan, seededRng(1)), idx: preview.step, score: { correct: 0, total: 0, activities: 0, bonus: 0 }, startedAt: 0 }
       : { name: "ready" },
   );
   const [askExit, setAskExit] = useState(false);
@@ -79,7 +79,7 @@ export default function SessionScreen() {
       ref: live,
       built: buildSession(live.plan, seededRng(Date.now())),
       idx: preview?.step ?? 0,
-      score: { correct: 0, total: 0, activities: 0 },
+      score: { correct: 0, total: 0, activities: 0, bonus: 0 },
       startedAt: Date.now(),
     });
   };
@@ -110,7 +110,7 @@ export default function SessionScreen() {
 
   const onActivityDone = (r: ActivityResult) => {
     if (phase.name !== "playing") return;
-    const score = { correct: phase.score.correct + r.correct, total: phase.score.total + r.total, activities: phase.score.activities + 1 };
+    const score = { correct: phase.score.correct + r.correct, total: phase.score.total + r.total, activities: phase.score.activities + 1, bonus: (phase.score.bonus ?? 0) + (r.bonus ?? 0) };
     if (phase.idx + 1 < phase.built.length) setPhase({ ...phase, idx: phase.idx + 1, score });
     else finish(phase.ref, score, phase.startedAt);
   };

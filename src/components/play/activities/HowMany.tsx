@@ -14,11 +14,11 @@ import type { OnDone } from "../types";
 export function HowMany({ rounds, assess, onDone }: { rounds: ThingRound[]; assess: boolean; onDone: OnDone }) {
   const prompts = useMemo(() => rounds.map((r) => [howManyAsk(thingOf(r.thing).unit)]), [rounds]);
   const answers = useMemo(() => rounds.map((r) => String(r.n)), [rounds]);
-  const c = useChoice({ intro: LINES.howMany, prompts, answers, assess, nameOf: (k) => [nameOf(Number(k))], onDone });
+  const c = useChoice({ intro: LINES.howMany, prompts, answers, assess, nameOf: (k) => [nameOf(Number(k))], challenge: !!rounds[rounds.length - 1]?.challenge, onDone });
   const round = rounds[c.idx];
 
   return (
-    <ActivityFrame>
+    <ActivityFrame challenge={c.challenge}>
       <ThingField key={c.idx} thing={round.thing} spots={round.spots} size={thingSize(round.n)} className="animate-pop-in" />
       <div className="flex flex-wrap items-center justify-center gap-5">
         {round.choices.map((n) => (

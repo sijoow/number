@@ -16,11 +16,11 @@ import { FRIEND_CARD, FriendChoice, FriendSum } from "./FriendSum";
 export function Join({ rounds, assess, onDone }: { rounds: JoinRound[]; assess: boolean; onDone: OnDone }) {
   const prompts = useMemo(() => rounds.map((r) => [nameOf(r.a), LINES.and, nameOf(r.b), LINES.joinQ]), [rounds]);
   const answers = useMemo(() => rounds.map((r) => String(r.a + r.b)), [rounds]);
-  const c = useChoice({ intro: LINES.join, prompts, answers, assess, nameOf: (k) => [nameOf(Number(k))], onDone });
+  const c = useChoice({ intro: LINES.join, prompts, answers, assess, nameOf: (k) => [nameOf(Number(k))], challenge: !!rounds[rounds.length - 1]?.challenge, onDone });
   const r = rounds[c.idx];
 
   return (
-    <ActivityFrame>
+    <ActivityFrame challenge={c.challenge}>
       <FriendSum key={c.idx} kind="join" a={r.a} b={r.b} answer={r.a + r.b} settled={c.settled} />
       <div className="flex flex-wrap items-center justify-center gap-5 portrait:gap-3">
         {r.choices.map((n) => (

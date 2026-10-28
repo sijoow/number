@@ -21,7 +21,7 @@ export function CountTap({ rounds, assess, onDone }: { rounds: ThingRound[]; ass
   const prompts = useMemo(() => rounds.map(() => [LINES.countTap]), [rounds]);
   const again = useMemo(() => rounds.map((r) => [howManyAsk(thingOf(r.thing).unit)]), [rounds]);
   const answers = useMemo(() => rounds.map((r) => String(r.n)), [rounds]);
-  const c = useChoice({ intro: "", prompts, again, answers, assess, nameOf: (k) => [nameOf(Number(k))], onDone });
+  const c = useChoice({ intro: "", prompts, again, answers, assess, nameOf: (k) => [nameOf(Number(k))], challenge: !!rounds[rounds.length - 1]?.challenge, onDone });
   // 판마다 누른 차례 — 판이 바뀌면 비운다
   const [taps, setTaps] = useState<{ idx: number; list: number[] }>({ idx: 0, list: [] });
   const round = rounds[c.idx];
@@ -38,7 +38,7 @@ export function CountTap({ rounds, assess, onDone }: { rounds: ThingRound[]; ass
   };
 
   return (
-    <ActivityFrame>
+    <ActivityFrame challenge={c.challenge}>
       <ThingField key={c.idx} thing={round.thing} spots={round.spots} size={thingSize(round.n)} tapped={tapped} onTap={counted ? undefined : tap} className="animate-pop-in" />
       {counted ? (
         <div className="flex animate-pop-in flex-wrap items-center justify-center gap-5">

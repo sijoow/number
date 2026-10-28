@@ -3,28 +3,32 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { BlockIcon, Guide } from "@/components/Art";
+import { BlockIcon, FriendArt, Guide } from "@/components/Art";
 import { Icon } from "@/components/Icon";
 import { ReadAlong } from "@/components/ReadAlong";
 import { Backdrop, BlockCount, PlayIcon, SpeechBubble, Splash, toneStyle, usePortrait } from "@/components/ui";
 import { CHILD } from "@/curriculum/child";
 import { chapterOf, DAYS_PER_CHAPTER, isStampDay } from "@/curriculum/course";
 import { gameOpens, GAMES } from "@/curriculum/games";
-import { LINES } from "@/curriculum/lines";
+import { LINES, meetHello, meetIntro } from "@/curriculum/lines";
 import { MENUS, type MenuId } from "@/curriculum/menus";
 import { imageOf } from "@/lib/assets";
 import { useIsMaster } from "@/lib/auth";
+import { missionState, todayFriend } from "@/lib/missions";
 import { isOpen } from "@/lib/play";
-import { canPlayToday, currentSession, type Progress } from "@/lib/progress";
+import { canPlayToday, currentSession, trainOf, wallet, type Progress } from "@/lib/progress";
 import { sfx } from "@/lib/sfx";
 import { useSaved, useToday } from "@/lib/store";
 import { say } from "@/lib/voice";
+import { TodayBoard, TrainEngine } from "./TodayBoard";
 
 /*
  * 첫 화면 — 한글나라 새 화면과 같은 틀(사용자가 "지금 아주 좋아"라고 한 구성).
  *   위    하온이 이름표 · 블록 · 부모 문(꾹)
  *   가운데 안내 친구(누르면 이름을 불러 준다) + 「오늘의 놀이」 카드 하나 — 장 제목, 이번 장 하루하루 점, 시작 버튼
- *   아래  유리 메뉴 바 — 놀이터 · 숫자 친구 · 숫자 쓰기(curriculum/menus)
+ *   아래  유리 메뉴 바 — 놀이터 · 숫자 놀이 · 숫자 친구 · 숫자 쓰기 · 블록 탑(curriculum/menus)
+ * 하루하루 재미 장치(2026-10-28 사용자): 오늘의 미션 판(출석 기차 + 미션 셋, 하루 첫 방문·도장 받을 때 저절로) · 블록 → 블록 탑 ·
+ * 이번 장 하루하루는 계단(하온이가 하루에 한 칸씩 올라 5일째 꼭대기 도장) · 안내 친구 자리에 날마다 다른 「오늘의 친구」.
  * 가로 화면은 친구(왼쪽) · 카드(오른쪽), 세로 화면은 위아래.
  */
 
@@ -101,25 +105,33 @@ function StarIcon() {
   );
 }
 
-/** 이번 장 하루하루 — 끝낸 날은 블록, 오늘은 대표색, 도장 놀이 날(5일째)은 별. 마스터는 점을 눌러 그날을 미리 본다 */
+/**
+ * 이번 장 하루하루 = 계단(2026-10-28 사용자: 하루하루 난이도가 오르는 느낌) — 날마다 한 칸씩 높아지고, 하온이 얼굴이 오늘 칸 위에 서 있다.
+ * 끝낸 칸은 블록, 오늘 칸은 대표색, 꼭대기(5일째 도장 놀이)는 별. 마스터는 칸을 눌러 그날을 미리 본다
+ */
 function DayTrack({ progress, onPick }: { progress: Progress; onPick?: (day: number) => void }) {
   const today = progress.practice ? null : progress.day;
+  const face = imageOf("child:face");
   return (
-    <div className="flex items-center justify-between gap-1">
+    <div className="flex items-end justify-between gap-1.5">
       {Array.from({ length: DAYS_PER_CHAPTER }, (_, i) => i + 1).map((d) => {
         const done = d < progress.day || (progress.practice && d === DAYS_PER_CHAPTER);
         const here = today === d;
         const dot = (
-          <span
-            className={`grid place-items-center rounded-full font-extrabold ${
-              here
-                ? "h-12 w-12 animate-breathe bg-brand text-xl text-white ring-4 ring-brand-soft portrait:h-10 portrait:w-10"
-                : done
-                  ? "h-10 w-10 bg-butter portrait:h-9 portrait:w-9"
-                  : "h-10 w-10 bg-paper-deep/70 text-base text-ink-soft portrait:h-9 portrait:w-9"
-            }`}
-          >
-            {here ? d : done ? <BlockIcon size={26} /> : isStampDay(d) ? <StarIcon /> : d}
+          <span className="flex flex-col items-center">
+            {here && (
+              <span className="relative mb-1 grid h-9 w-9 animate-float place-items-center overflow-hidden rounded-full bg-brand text-lg font-extrabold text-white ring-2 ring-white short:h-7 short:w-7">
+                {face ? <Image src={face} alt={CHILD.nick} fill sizes="40px" className="object-cover" /> : [...CHILD.full][1]}
+              </span>
+            )}
+            <span
+              className={`grid w-12 place-items-center rounded-t-[0.9rem] rounded-b-[0.4rem] font-extrabold portrait:w-11 ${
+                here ? "bg-brand text-xl text-white ring-4 ring-brand-soft" : done ? "bg-butter" : "bg-paper-deep/70 text-base text-ink-soft"
+              }`}
+              style={{ height: `${2.3 + (d - 1) * 0.55}rem` }}
+            >
+              {here ? d : done ? <BlockIcon size={26} /> : isStampDay(d) ? <StarIcon /> : d}
+            </span>
           </span>
         );
         return onPick ? (
@@ -143,10 +155,17 @@ export default function HomeScreen() {
   const [line, setLine] = useState<string | null>(null);
   const helloAt = useRef(0);
   const portrait = usePortrait();
+  // 오늘의 미션 판 — null 이면 저절로(출석 전·도장 받을 차례), 누르거나 닫으면 그대로
+  const [board, setBoard] = useState<boolean | null>(null);
 
   if (!saved) return <Splash />;
 
   const { progress, settings } = saved;
+  const train = trainOf(progress, today);
+  const missions = missionState(progress, today);
+  const boardCalls = !train.checked || (missions.allDone && !missions.claimed);
+  const showBoard = board ?? (!!today && boardCalls);
+  const friendN = todayFriend(progress, today);
   const session = currentSession(progress);
   const chapter = chapterOf(session?.plan.chapter ?? progress.chapter);
   const can = master || canPlayToday(progress, settings, today);
@@ -156,7 +175,14 @@ export default function HomeScreen() {
   const greet = () => {
     sfx.wake();
     sfx.pop();
-    const text = !session || !can ? LINES.doneToday : LINES.hello[helloAt.current++ % LINES.hello.length];
+    // 오늘의 친구가 있으면 번갈아 — 친구 인사·소개, 그다음엔 하온이 이름을 부르는 평소 인사
+    const turn = helloAt.current++;
+    if (friendN && turn % 2 === 0) {
+      setLine(meetHello(friendN));
+      void say([LINES.todayFriend, meetHello(friendN), meetIntro(friendN)]);
+      return;
+    }
+    const text = !session || !can ? LINES.doneToday : LINES.hello[Math.floor(turn / (friendN ? 2 : 1)) % LINES.hello.length];
     setLine(text);
     void say(text);
   };
@@ -172,6 +198,7 @@ export default function HomeScreen() {
     games: true,
     friends: true,
     write: true,
+    tower: true,
   };
 
   return (
@@ -182,8 +209,28 @@ export default function HomeScreen() {
 
       <header className="relative z-10 flex items-center justify-between gap-2 px-5 pt-4 short:px-4 short:pt-2 portrait:px-3 portrait:pt-3">
         <NameTag sub={chapter ? `${chapter.no}장 · ${chapter.title}` : "모든 장을 마쳤어요"} master={master} />
-        <div className="flex items-center gap-2">
-          <BlockCount n={progress.blocks} />
+        <div className="flex items-center gap-2 portrait:gap-1.5">
+          {/* 오늘의 미션 판 다시 열기 — 기관차 + 미션 셋 점 */}
+          <button
+            type="button"
+            aria-label="오늘의 미션"
+            onClick={() => {
+              sfx.wake();
+              sfx.pop();
+              setBoard(true);
+            }}
+            className={`glass flex h-12 shrink-0 items-center gap-1.5 rounded-full px-3 ${boardCalls ? "animate-breathe ring-4 ring-brand/40" : ""}`}
+          >
+            <TrainEngine w="1.5rem" />
+            <span className="flex gap-1">
+              {missions.list.map((m, i) => (
+                <span key={i} className={`h-2.5 w-2.5 rounded-full ${m.done ? "bg-mint-deep" : "bg-ink/20"}`} />
+              ))}
+            </span>
+          </button>
+          <button type="button" aria-label="블록 탑" onClick={() => goto("/tower")}>
+            <BlockCount n={wallet(progress)} />
+          </button>
           <ParentGate />
         </div>
       </header>
@@ -194,8 +241,9 @@ export default function HomeScreen() {
           <SpeechBubble tail="down" className="mb-3 max-w-[min(86vw,24rem)] short:mb-1 short:px-4 short:py-2 short:text-xl portrait:text-2xl">
             <ReadAlong text={bubble} />
           </SpeechBubble>
-          <button type="button" onClick={greet} aria-label="안내 친구">
-            <Guide size={portrait ? 150 : 210} className="animate-float" />
+          <button type="button" onClick={greet} aria-label={friendN ? "오늘의 친구" : "안내 친구"} className="flex flex-col items-center">
+            {friendN ? <FriendArt n={friendN} height={portrait ? "150px" : "min(210px, 30vh)"} className="animate-float" /> : <Guide size={portrait ? 150 : 210} className="animate-float" />}
+            {friendN && <span className="glass -mt-1 rounded-full px-3 py-0.5 text-base font-extrabold short:text-sm">오늘의 친구</span>}
           </button>
         </div>
 
@@ -286,6 +334,8 @@ export default function HomeScreen() {
           );
         })}
       </nav>
+
+      {showBoard && today && <TodayBoard progress={progress} today={today} onClose={() => setBoard(false)} onStay={() => setBoard(true)} />}
     </main>
   );
 }

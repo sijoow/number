@@ -11,12 +11,12 @@ import { LINES } from "@/curriculum/lines";
 import { menuOf } from "@/curriculum/menus";
 import { MAX_NUMBER, nameOf } from "@/curriculum/numbers";
 import { imageOf } from "@/lib/assets";
-import { useIsMaster } from "@/lib/auth";
+import { currentAuth, useIsMaster } from "@/lib/auth";
 import { isOpen } from "@/lib/play";
 import { finishGame, localDay, reached, topNumber } from "@/lib/progress";
 import { buildActivity, seededRng, type BuiltActivity } from "@/lib/rounds";
 import { sfx } from "@/lib/sfx";
-import { readSaved, updateSaved, useSaved } from "@/lib/store";
+import { readSaved, updateSaved, useSaved, type Saved } from "@/lib/store";
 import { pick, say, stopVoice } from "@/lib/voice";
 
 /*
@@ -40,6 +40,28 @@ function GameArt({ g }: { g: Game }) {
   );
 }
 
+/** 아는 수·규칙 단계 — 지금 진도로 */
+function contextOf(saved: Saved, master: boolean): PlayContext {
+  const abc = firstPattern("abc");
+  return {
+    top: master ? MAX_NUMBER : topNumber(saved.progress),
+    patternLevel: master || (abc && reached(saved.progress, abc.chapter, abc.day)) ? "abc" : "ab",
+  };
+}
+
+/**
+ * 오늘의 미션에서 바로 왔으면(?g=놀이, 2026-10-28) 그 놀이로 시작 — 첫 렌더에 한 번. 화면은 ssr 없이 그려서 기기 진도를 바로 읽는다.
+ * 아직 안 열린 놀이면 목록으로.
+ */
+function initialPhase(): Phase {
+  const g = gameOf(new URLSearchParams(window.location.search).get("g") ?? "");
+  if (!g) return { name: "list" };
+  const saved = readSaved();
+  const master = currentAuth()?.user.role === "master";
+  if (!isOpen(saved, gameOpens(g), master)) return { name: "list" };
+  return { name: "playing", game: g, ...freshGame(g, contextOf(saved, master)) };
+}
+
 /** 새 판 — 섞을 씨앗과 시작 시각을 지금 시각으로. 카드를 누를 때만 부른다(렌더 중에 부르지 않는다) */
 function freshGame(g: Game, ctx: PlayContext): { built: BuiltActivity; startedAt: number } {
   const now = Date.now();
@@ -49,21 +71,20 @@ function freshGame(g: Game, ctx: PlayContext): { built: BuiltActivity; startedAt
 export default function FreeScreen() {
   const saved = useSaved();
   const master = useIsMaster();
-  const [phase, setPhase] = useState<Phase>({ name: "list" });
+  const [phase, setPhase] = useState<Phase>(initialPhase);
+  // 미션에서 바로 시작했으면 놀이가 먼저 말한다 — 놀이터 인사는 건너뛴다
+  const [fromMission] = useState(() => phase.name === "playing");
   const menu = menuOf("free");
 
   useEffect(() => {
-    void say(LINES.free);
+    if (fromMission) window.history.replaceState(null, "", window.location.pathname);
+    else void say(LINES.free);
     return () => stopVoice();
-  }, []);
+  }, [fromMission]);
 
   if (!saved) return <Splash />;
 
-  const abc = firstPattern("abc");
-  const ctx: PlayContext = {
-    top: master ? MAX_NUMBER : topNumber(saved.progress),
-    patternLevel: master || (abc && reached(saved.progress, abc.chapter, abc.day)) ? "abc" : "ab",
-  };
+  const ctx = contextOf(saved, master);
 
   const start = (g: Game) => {
     sfx.wake();

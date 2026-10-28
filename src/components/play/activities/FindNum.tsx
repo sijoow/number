@@ -13,11 +13,11 @@ import type { OnDone } from "../types";
 export function FindNum({ rounds, assess, onDone }: { rounds: NumRound[]; assess: boolean; onDone: OnDone }) {
   const prompts = useMemo(() => rounds.map((r) => [nameOf(r.n), LINES.whereIs]), [rounds]);
   const answers = useMemo(() => rounds.map((r) => String(r.n)), [rounds]);
-  const c = useChoice({ intro: LINES.findNum, prompts, answers, assess, nameOf: (k) => [nameOf(Number(k))], onDone });
+  const c = useChoice({ intro: LINES.findNum, prompts, answers, assess, nameOf: (k) => [nameOf(Number(k))], challenge: !!rounds[rounds.length - 1]?.challenge, onDone });
   const round = rounds[c.idx];
 
   return (
-    <ActivityFrame>
+    <ActivityFrame challenge={c.challenge}>
       <div key={c.idx} className="animate-pop-in">
         <SpeakerButton text={prompts[c.idx]} size={168} pulse />
       </div>

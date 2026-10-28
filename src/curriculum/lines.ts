@@ -100,6 +100,19 @@ export const LINES = {
   revealHere: "여기 있었네!",
   praise: ["잘했어!", "맞았어!", "최고야!", "우와, 멋지다!", `${nick} 최고야!`, `잘했어, ${call}!`],
   retry: ["다시 해 볼까?", "한 번 더 해 보자!"],
+  // 하루하루 재미 장치(2026-10-28 사용자: 일일 미션·출석·난이도 — 토도수학의 오늘의 목표·COMPLETE 도장처럼)
+  attendAsk: "출석 체크! 기차를 눌러 봐!",
+  trainGo: "기차 출발! 블록 일곱 개 받았어!",
+  missions: "오늘의 미션이야! 하나씩 해 볼까?",
+  missionStampAsk: "미션을 다 했어! 도장을 눌러 봐!",
+  missionAll: "미션 완료! 도장 쾅! 블록 세 개 받았어!",
+  tower: `${call}, 블록으로 탑을 쌓아 볼까?`,
+  towerDrag: "블록을 끌어서 탑 위에 올려 봐!",
+  towerFloor: "한 층 완성! 새 친구가 이사 왔어!",
+  towerEmpty: "블록이 다 떨어졌어! 놀이를 하면 블록이 생겨.",
+  challenge: "도전! 조금 어려운 문제야!",
+  challengeWin: "도전 성공! 블록 하나 더!",
+  todayFriend: "오늘의 친구야!",
 } as const;
 
 /** 숫자 친구 인사 — "안녕! 나는 셋이야." */
@@ -222,6 +235,13 @@ export function shareEach(n: number): string {
 }
 
 /** 모든 말을 한 줄씩 — 음성 파일 목록을 뽑을 때 쓴다 */
+/** 출석 기차 몇째 칸 — "오늘은 넷째 날! 사가 탔어!" (car 1~7) */
+export function attendBoard(car: number): string {
+  const ord = ["첫째", "둘째", "셋째", "넷째", "다섯째", "여섯째", "일곱째"][car - 1] ?? `${car}번째`;
+  const who = sinoOf(car);
+  return `오늘은 ${ord} 날! ${who}${hasBatchim(who) ? "이" : "가"} 탔어!`;
+}
+
 export function allLineTexts(): string[] {
   const fixed = Object.values(LINES).flatMap((v) => (typeof v === "string" ? [v] : [...v]));
   const nums = range(1, MAX_NUMBER);
@@ -248,5 +268,7 @@ export function allLineTexts(): string[] {
     ...FAMILY_NAMES.flatMap((name) => [name, humanTurn(name), humanHome(name)]),
     ...range(1, 5).map(shareEach),
     ...range(1, 10).flatMap((n) => [withAnd(n), amongOf(n), heavyIs(n)]),
+    // 출석 기차 일곱 칸
+    ...range(1, 7).map(attendBoard),
   ];
 }

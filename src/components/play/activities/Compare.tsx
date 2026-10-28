@@ -32,6 +32,7 @@ export function Compare({ rounds, assess, onDone }: { rounds: CompareRound[]; as
     answers,
     assess,
     nameOf: (k, i) => [nameOf(k === "left" ? rounds[i].left : rounds[i].right)],
+    challenge: !!rounds[rounds.length - 1]?.challenge,
     onDone,
   });
   const r = rounds[c.idx];
@@ -39,7 +40,7 @@ export function Compare({ rounds, assess, onDone }: { rounds: CompareRound[]; as
   const field = { width: "min(43vw, 22rem)", height: "min(40vh, 22rem)" };
 
   return (
-    <ActivityFrame>
+    <ActivityFrame challenge={c.challenge}>
       <p key={c.idx} className="glass animate-pop-in rounded-full px-7 py-2.5 text-3xl font-extrabold short:text-2xl">
         <ReadAlong text={askOf(r)} />
       </p>

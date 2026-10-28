@@ -16,11 +16,11 @@ export function Arith({ op, rounds, assess, onDone }: { op: "add" | "subtract"; 
   const add = op === "add";
   const prompts = useMemo(() => rounds.map((r) => [add ? addAsk(r.a, r.b) : subtractAsk(r.a, r.b)]), [add, rounds]);
   const answers = useMemo(() => rounds.map((r) => String(r.answer)), [rounds]);
-  const c = useChoice({ intro: add ? LINES.add : LINES.subtract, prompts, answers, assess, nameOf: (k) => [nameOf(Number(k))], onDone });
+  const c = useChoice({ intro: add ? LINES.add : LINES.subtract, prompts, answers, assess, nameOf: (k) => [nameOf(Number(k))], challenge: !!rounds[rounds.length - 1]?.challenge, onDone });
   const r = rounds[c.idx];
 
   return (
-    <ActivityFrame>
+    <ActivityFrame challenge={c.challenge}>
       <FriendSum key={c.idx} kind={op} a={r.a} b={r.b} answer={r.answer} settled={c.settled} />
       <div className="flex flex-wrap items-center justify-center gap-5 portrait:gap-3">
         {r.choices.map((n) => (

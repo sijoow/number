@@ -6,6 +6,7 @@ import { BlockIcon, Guide } from "@/components/Art";
 import { Icon } from "@/components/Icon";
 import { Backdrop, BlockCount, UiIcon, type Scene } from "@/components/ui";
 import { usePlayClock } from "@/lib/play";
+import { wallet } from "@/lib/progress";
 import { useSaved } from "@/lib/store";
 import { stopVoice } from "@/lib/voice";
 
@@ -52,7 +53,7 @@ export function ModeShell({
           <Icon id={iconId} emoji={icon} />
           <span className="title-pop truncate">{title}</span>
         </div>
-        <BlockCount n={saved?.progress.blocks ?? 0} />
+        <BlockCount n={saved ? wallet(saved.progress) : 0} />
       </header>
       {/* 내용이 화면보다 크면 잘리지 않고 스크롤 — 낮은 화면(폰 가로·주소창)에서 아래가 끊기지 않게 */}
       <section className="relative z-0 min-h-0 flex-1 overflow-x-hidden overflow-y-auto">{children}</section>

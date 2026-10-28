@@ -12,13 +12,13 @@ import type { OnDone } from "../types";
 export function NextNum({ rounds, assess, onDone }: { rounds: SeqRound[]; assess: boolean; onDone: OnDone }) {
   const prompts = useMemo(() => rounds.map((r) => [...r.seq.map(nameOf), LINES.nextNum]), [rounds]);
   const answers = useMemo(() => rounds.map((r) => String(r.answer)), [rounds]);
-  const c = useChoice({ intro: "", prompts, answers, assess, nameOf: (k) => [nameOf(Number(k))], onDone });
+  const c = useChoice({ intro: "", prompts, answers, assess, nameOf: (k) => [nameOf(Number(k))], challenge: !!rounds[rounds.length - 1]?.challenge, onDone });
   const r = rounds[c.idx];
   const tile = { width: "min(15vh, calc(13*var(--vw)))", height: "min(15vh, calc(13*var(--vw)))" };
   const font = { fontSize: "min(10vh, calc(8.5*var(--vw)))" };
 
   return (
-    <ActivityFrame>
+    <ActivityFrame challenge={c.challenge}>
       <div key={c.idx} className="flex animate-pop-in flex-wrap items-center justify-center gap-3">
         {r.seq.map((n, i) => (
           <span key={i} className="grid place-items-center rounded-[1.6rem] bg-white shadow-[0_6px_0_var(--paper-deep)]" style={tile}>

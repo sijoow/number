@@ -71,6 +71,9 @@
   --animate-drop-in: drop-in 0.35s cubic-bezier(0.3, 1.4, 0.5, 1) both;
   --animate-fly-up: fly-up 1.2s cubic-bezier(0.2, 1.2, 0.4, 1) both;
   --animate-die-tumble: die-tumble 1.6s linear both;
+  --animate-train-go: train-go 1.8s cubic-bezier(0.5, 0, 0.8, 0.4) 0.9s both;
+  --animate-train-in: train-in 1s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  --animate-stamp-in: stamp-in 0.55s cubic-bezier(0.2, 1.4, 0.4, 1) both;
   --animate-merge-out: merge-out 0.35s ease-in both;
   --animate-leave-up: leave-up 0.6s ease-in both;
 
@@ -209,6 +212,34 @@
     100% {
       transform: scale(1.2);
       opacity: 0;
+    }
+  }
+  /* 출석 기차 — 일곱 칸이 차면 왼쪽으로 칙칙폭폭 떠나고, 새 기차는 오른쪽에서 들어온다 */
+  @keyframes train-go {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-130vw);
+    }
+  }
+  @keyframes train-in {
+    0% {
+      transform: translateX(110vw);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  /* 오늘의 미션 도장 — 위에서 쾅 */
+  @keyframes stamp-in {
+    0% {
+      transform: scale(2.4) rotate(-30deg);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1) rotate(-12deg);
+      opacity: 1;
     }
   }
   /* 빼기 — 떠나는 블록이 위로 날아간다 */

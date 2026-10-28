@@ -8,10 +8,11 @@ import { Splash, SquishButton, UiIcon } from "@/components/ui";
 import { LINES } from "@/curriculum/lines";
 import { menuOf } from "@/curriculum/menus";
 import { MAX_NUMBER, nameOf, range } from "@/curriculum/numbers";
-import { useIsMaster } from "@/lib/auth";
+import { currentAuth, useIsMaster } from "@/lib/auth";
 import { recordPlay } from "@/lib/play";
+import { localDay, noteWrite } from "@/lib/progress";
 import { sfx } from "@/lib/sfx";
-import { useSaved } from "@/lib/store";
+import { readSaved, updateSaved, useSaved } from "@/lib/store";
 import { pick, say, stopVoice } from "@/lib/voice";
 
 /*
@@ -19,18 +20,29 @@ import { pick, say, stopVoice } from "@/lib/voice";
  * 만난 숫자 친구의 숫자만 열린다(마스터는 다). 다 쓰면 칭찬 + 하루 리포트에 활동 하나.
  */
 
+/** 오늘의 미션에서 바로 왔으면(?n=숫자) 그 숫자 쓰기로 — 만난 친구의 숫자만 */
+function initialPick(): number | null {
+  const n = Number(new URLSearchParams(window.location.search).get("n"));
+  if (!Number.isInteger(n) || n < 1 || n > MAX_NUMBER) return null;
+  return currentAuth()?.user.role === "master" || readSaved().progress.friends.includes(n) ? n : null;
+}
+
 export default function WriteScreen() {
   const saved = useSaved();
   const master = useIsMaster();
-  const [pickN, setPickN] = useState<number | null>(null);
+  const [pickN, setPickN] = useState<number | null>(initialPick);
+  const [fromMission] = useState(() => pickN);
   const [key, erase] = useBoardKey();
   const [done, setDone] = useState(false);
   const menu = menuOf("write");
 
   useEffect(() => {
-    void say(LINES.write);
+    if (fromMission !== null) {
+      window.history.replaceState(null, "", window.location.pathname);
+      void say([LINES.trace, nameOf(fromMission)]);
+    } else void say(LINES.write);
     return () => stopVoice();
-  }, []);
+  }, [fromMission]);
 
   if (!saved) return <Splash />;
   const known = new Set(master ? range(1, MAX_NUMBER) : saved.progress.friends);
@@ -64,6 +76,8 @@ export default function WriteScreen() {
               setDone(true);
               sfx.cheer();
               recordPlay({ acts: 1 });
+              // 쓰기 미션 확인용 — 그날 쓴 숫자
+              updateSaved((s) => ({ ...s, progress: noteWrite(s.progress, pickN, localDay(new Date())) }));
               void say(pick(LINES.praise));
             }}
           />

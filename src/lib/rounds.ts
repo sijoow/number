@@ -46,6 +46,8 @@ export interface Spot {
 export interface NumRound {
   n: number;
   choices: number[];
+  /** 도전 판(오늘의 놀이 마지막 판) — withChallenge */
+  challenge?: boolean;
 }
 
 export interface ThingRound extends NumRound {
@@ -62,6 +64,8 @@ export interface CompareRound {
   show: "things" | "numbers";
   leftSpots: Spot[];
   rightSpots: Spot[];
+  /** 도전 판(오늘의 놀이 마지막 판) — withChallenge */
+  challenge?: boolean;
 }
 
 export interface SeqRound {
@@ -69,6 +73,8 @@ export interface SeqRound {
   seq: number[];
   answer: number;
   choices: number[];
+  /** 도전 판(오늘의 놀이 마지막 판) — withChallenge */
+  challenge?: boolean;
 }
 
 export interface ShapeCard {
@@ -96,6 +102,8 @@ export interface JoinRound {
   a: number;
   b: number;
   choices: number[];
+  /** 도전 판(오늘의 놀이 마지막 판) — withChallenge */
+  challenge?: boolean;
 }
 
 export interface SizeRound {
@@ -112,6 +120,8 @@ export interface ArithRound {
   /** 더하기면 a + b, 빼기면 a − b */
   answer: number;
   choices: number[];
+  /** 도전 판(오늘의 놀이 마지막 판) — withChallenge */
+  challenge?: boolean;
 }
 
 export interface SortRound {
@@ -391,6 +401,63 @@ export function buildActivity(spec: ActivitySpec, rng: Rng): BuiltActivity {
   }
 }
 
+/** 마지막 판만 바꿔 끼운다 */
+function lastAs<R>(rounds: readonly R[], make: (last: R) => R): R[] {
+  const last = rounds[rounds.length - 1];
+  return last === undefined ? [...rounds] : [...rounds.slice(0, -1), make(last)];
+}
+
+/**
+ * 도전 판 — 오늘의 놀이(도장 날 말고)에서 수를 다루는 놀이의 마지막 판을 한 단계 어렵게(2026-10-28 사용자: 하루하루 난이도가 오르는 느낌).
+ * 범위 밖 수는 쓰지 않는다 — 그 범위의 가장 큰 수, 가장 헷갈리는 짝(바로 옆 수), 보기 하나 더. 처음에 맞히면 블록 1개 더(lib/progress).
+ * 모양·규칙·크기·나누기와 블록 쌓기·손뼉·쓰기·만나기는 그대로.
+ */
+export function withChallenge(spec: ActivitySpec, built: BuiltActivity, rng: Rng): BuiltActivity {
+  if ((built.kind === "count" || built.kind === "how-many") && "range" in spec) {
+    const [, hi] = clampRange(spec.range);
+    return { ...built, rounds: lastAs(built.rounds, (r) => ({ ...r, n: hi, spots: spotsFor(hi, rng), choices: numberChoices(hi, spec.range, 3, rng), challenge: true })) };
+  }
+  if (built.kind === "find-num" && "range" in spec) {
+    const [, hi] = clampRange(spec.range);
+    return { ...built, rounds: lastAs(built.rounds, () => ({ n: hi, choices: numberChoices(hi, spec.range, 4, rng), challenge: true })) };
+  }
+  if (built.kind === "compare" && spec.kind === "compare") {
+    const [lo, hi] = clampRange(spec.range);
+    if (hi - lo < 1) return built;
+    // 바로 옆 수끼리 — 눈으로 언뜻 봐서는 모른다, 세어 봐야 한다
+    const [left, right] = rng() < 0.5 ? [hi, hi - 1] : [hi - 1, hi];
+    return { ...built, rounds: lastAs(built.rounds, (r) => ({ ...r, left, right, leftSpots: spotsFor(left, rng), rightSpots: spotsFor(right, rng), challenge: true })) };
+  }
+  if (built.kind === "next-num" && spec.kind === "next-num") {
+    const [lo, hi] = clampRange(spec.range);
+    return {
+      ...built,
+      rounds: lastAs(built.rounds, (r) => {
+        const start = hi - r.seq.length;
+        if (start < lo) return r;
+        return { seq: range(start, hi - 1), answer: hi, choices: numberChoices(hi, [lo, hi], 3, rng), challenge: true };
+      }),
+    };
+  }
+  if (built.kind === "join" && spec.kind === "join") {
+    const max = Math.max(2, Math.min(MAX_NUMBER, spec.max));
+    const a = 1 + Math.floor(rng() * (max - 1));
+    return { ...built, rounds: lastAs(built.rounds, () => ({ a, b: max - a, choices: numberChoices(max, [1, max], 3, rng), challenge: true })) };
+  }
+  if ((built.kind === "add" || built.kind === "subtract") && (spec.kind === "add" || spec.kind === "subtract")) {
+    const max = Math.max(2, Math.min(ARITH_MAX, spec.max));
+    const k = 1 + Math.floor(rng() * (max - 1));
+    // 더하기는 합이 가장 큰 수, 빼기는 가장 큰 수에서 빼기
+    const [a, b, answer] = built.kind === "add" ? [k, max - k, max] : [max, k, max - k];
+    return { ...built, rounds: lastAs(built.rounds, () => ({ a, b, answer, choices: numberChoices(answer, [1, max], 3, rng), challenge: true })) };
+  }
+  return built;
+}
+
+/** 하루치 놀이 — 도장 놀이 날(형성 평가)은 그대로 재고, 다른 날은 마지막 판이 도전 판 */
 export function buildSession(plan: DayPlan, rng: Rng): BuiltActivity[] {
-  return plan.activities.map((a) => buildActivity(a, rng));
+  return plan.activities.map((a) => {
+    const built = buildActivity(a, rng);
+    return plan.stamp ? built : withChallenge(a, built, rng);
+  });
 }
