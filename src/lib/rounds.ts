@@ -133,6 +133,81 @@ export interface SortRound {
   answers: string[];
 }
 
+// ── 업체 유아 단계 놀이(2026-10-28) ──
+
+export interface CountUpRound {
+  n: number;
+  thing: string;
+  /** 무리 지어 놓기(섞인 판) — 아니면 한 줄 */
+  group: boolean;
+  /** 숫자 카드 둘 — 정답과 바로 옆 수, 작은 수가 왼쪽 */
+  choices: number[];
+}
+
+export interface MatchRound {
+  by: "same" | "number";
+  /** 위 줄 — 물건 id 또는 숫자("3"). 짝은 같은 열쇠끼리 */
+  top: string[];
+  /** 아래 줄 — 첫 판은 위와 같은 차례(선이 곧게), 다음 판부터 섞인다 */
+  bottom: string[];
+}
+
+export interface FarmRound {
+  n: number;
+  /** 헛간에 들어가는 동물(물건 id) */
+  animal: string;
+  /** 카드 둘 — 정답과 바로 옆 수(0 이면 빈 카드), 작은 수가 왼쪽 */
+  choices: number[];
+}
+
+export interface TallyBoard {
+  /** 판의 칸 — 작은 수부터 */
+  nums: number[];
+  /** 오른쪽에 나오는 숫자 타일 차례 — 셋씩 묶어 그 안에서만 섞는다(거의 작은 수부터) */
+  queue: number[];
+}
+
+export interface PairCard extends ShapeCard {
+  /** 판 안 자리(%) */
+  x: number;
+  y: number;
+}
+
+export interface ShapePairRound {
+  cards: PairCard[];
+}
+
+export interface DiceRound {
+  n: number;
+  /** 주사위 눈 보기 */
+  choices: number[];
+}
+
+export interface ShopRound {
+  /** 이름으로 하나(n = 1, 선반엔 서로 다른 물건 셋) — 아니면 수만큼 */
+  named: boolean;
+  n: number;
+  /** 손님이 달라는 물건 */
+  thing: string;
+  /** 선반의 다른 물건 — 헷갈리게 두어 개 */
+  other: string;
+  /** 선반 — 달라는 물건은 n 보다 넉넉히 */
+  shelf: string[];
+  /** 손님 숫자 친구 — 달라는 수와 같은 친구 */
+  friend: number;
+}
+
+export interface NumberLineRound {
+  /** 수직선에 미리 놓인 블록 */
+  a: number;
+  /** 더 놓아야 할 블록 — 막대 보기(1~4) 중 하나 */
+  b: number;
+  bars: number[];
+}
+
+/** 수직선 밝히기 수직선 끝 — 0 부터 10 까지 */
+export const LINE_END = 10;
+
 export type BuiltActivity =
   | { kind: "meet"; n: number }
   | { kind: "count"; rounds: ThingRound[] }
@@ -149,7 +224,15 @@ export type BuiltActivity =
   | { kind: "size"; rounds: SizeRound[] }
   | { kind: "add"; rounds: ArithRound[] }
   | { kind: "subtract"; rounds: ArithRound[] }
-  | { kind: "sort"; rounds: SortRound[] };
+  | { kind: "sort"; rounds: SortRound[] }
+  | { kind: "count-up"; rounds: CountUpRound[] }
+  | { kind: "match"; rounds: MatchRound[] }
+  | { kind: "farm"; rounds: FarmRound[] }
+  | { kind: "tally"; board: TallyBoard }
+  | { kind: "shape-pair"; rounds: ShapePairRound[] }
+  | { kind: "dice"; rounds: DiceRound[] }
+  | { kind: "shop"; rounds: ShopRound[] }
+  | { kind: "number-line"; rounds: NumberLineRound[] };
 
 /** 점수를 세는 놀이인지 — 도장 놀이 날에는 이것만 나온다 */
 export function isScored(kind: ActivitySpec["kind"]): boolean {
@@ -362,6 +445,120 @@ function joinRounds(spec: Extract<ActivitySpec, { kind: "join" }>, rng: Rng): Jo
   });
 }
 
+/** 바로 옆 수 하나 — lo 아래로는 lo − 1 까지(0 은 빈 카드로 쓰는 놀이만), hi 위로는 안 간다(아직 안 배운 수) */
+function neighbor(n: number, lo: number, hi: number, rng: Rng): number {
+  const cands = [n - 1, n + 1].filter((x) => x >= lo && x <= hi);
+  return cands.length ? pickOne(cands, rng) : n + 1;
+}
+
+/** 수 세기 기초 — 작은 수부터 하나씩 늘어난다(업체 판 차례 그대로) */
+function countUpRounds(spec: Extract<ActivitySpec, { kind: "count-up" }>, rng: Rng): CountUpRound[] {
+  const [lo, hi] = clampRange(spec.range);
+  const mix = !!spec.mix;
+  // 섞인 판은 다섯 판까지(업체 한 놀이 다섯 문제) — 범위를 섞어서
+  const nums = mix ? shuffle(range(lo, hi), rng).slice(0, 5) : range(lo, hi);
+  const things = thingsFor(nums.length, rng);
+  return nums.map((n, i) => ({ n, thing: things[i], group: mix, choices: [n, neighbor(n, Math.max(1, lo - 1), hi, rng)].sort((a, b) => a - b) }));
+}
+
+/** 짝 연결하기 — 같은 물건 넷, 또는 숫자 넷(범위가 좁으면 있는 만큼) */
+function matchRounds(spec: Extract<ActivitySpec, { kind: "match" }>, rng: Rng): MatchRound[] {
+  return range(0, spec.rounds - 1).map((i) => {
+    let top: string[];
+    if (spec.by === "same") {
+      top = shuffle(
+        THINGS.map((t) => t.id),
+        rng,
+      ).slice(0, 4);
+    } else {
+      const [lo, hi] = clampRange(spec.nums ?? [1, 5]);
+      top = shuffle(range(lo, hi), rng)
+        .slice(0, 4)
+        .map(String);
+    }
+    let bottom = i === 0 ? [...top] : shuffle(top, rng);
+    // 섞은 판인데 차례가 그대로면 한 칸 돌린다 — 선이 엇갈려야 잘 보고 잇는다
+    if (i > 0 && bottom.every((k, j) => k === top[j])) bottom = [...bottom.slice(1), bottom[0]];
+    return { by: spec.by, top, bottom };
+  });
+}
+
+/** 작은 농장 동물 — 판마다 바뀐다(업체 농장처럼 양·소·돼지·닭, 2026-10-29). 그림은 curriculum/things */
+export const FARM_ANIMALS = ["sheep", "cow", "pig", "chick"] as const;
+
+/** 작은 농장 — 헛간에 들어가는 동물 수. 카드 둘 중 하나는 0(빈 헛간)일 수도 있다 */
+function farmRounds(spec: Extract<ActivitySpec, { kind: "farm" }>, rng: Rng): FarmRound[] {
+  const [lo, hi] = clampRange(spec.range);
+  const animals = cycle([...FARM_ANIMALS], spec.rounds, rng);
+  return numbersFor([lo, hi], spec.rounds, rng).map((n, i) => ({ n, animal: animals[i], choices: [n, neighbor(n, 0, hi, rng)].sort((a, b) => a - b) }));
+}
+
+/** 숫자 퍼즐 — 칸은 작은 수부터, 타일은 셋씩 묶어 그 안에서만 섞는다(4살이 처음부터 끝까지 헤매지 않게) */
+function tallyBoard(spec: Extract<ActivitySpec, { kind: "tally" }>, rng: Rng): TallyBoard {
+  const [lo, hi] = clampRange(spec.range);
+  const nums = range(lo, hi);
+  const queue: number[] = [];
+  for (let i = 0; i < nums.length; i += 3) queue.push(...shuffle(nums.slice(i, i + 3), rng));
+  return { nums, queue };
+}
+
+/** 도형 맞추기 — 첫 판은 두 짝, 다음 판부터 세 짝. 짝끼리 크기가 또렷이 다르고 색·돌림도 다를 수 있다(A5) */
+function shapePairRounds(spec: Extract<ActivitySpec, { kind: "shape-pair" }>, rng: Rng): ShapePairRound[] {
+  return range(0, spec.rounds - 1).map((i) => {
+    const shapes = shuffle(
+      SHAPES.map((s) => s.id),
+      rng,
+    ).slice(0, i === 0 ? 2 : 3);
+    const cards = shuffle(
+      shapes.flatMap((shape) =>
+        [0.95, 0.55 + rng() * 0.1].map((scale) => ({ shape, color: pickOne(SHAPE_COLORS, rng), scale, rot: shape === "circle" ? 0 : Math.round((rng() - 0.5) * 40) })),
+      ),
+      rng,
+    );
+    const spots = spotsFor(cards.length, rng);
+    return { cards: cards.map((c, k) => ({ ...c, key: `${i}-${k}`, x: spots[k].x, y: spots[k].y })) };
+  });
+}
+
+/** 주사위 찾기 — 작은 수부터 차례로, 주사위는 6까지. 보기는 셋(아는 수가 적으면 셋까지는 보여 준다) */
+function diceRounds(spec: Extract<ActivitySpec, { kind: "dice" }>, rng: Rng): DiceRound[] {
+  const [lo, hi] = clampRange(spec.range);
+  const top = Math.min(6, hi);
+  return range(Math.min(lo, top), top).map((n) => ({ n, choices: numberChoices(n, [1, Math.min(6, Math.max(3, top))], 3, rng) }));
+}
+
+/** 가게 놀이 — 셀 때 "개"로 세는 물건만(병아리·물고기를 사고팔지는 않는다) */
+function shopRounds(spec: Extract<ActivitySpec, { kind: "shop" }>, rng: Rng): ShopRound[] {
+  const goods = THINGS.filter((t) => t.unit === "개").map((t) => t.id);
+  const nums = numbersFor(spec.range, spec.rounds, rng);
+  const picks = cycle(goods, spec.rounds, rng);
+  return nums.map((n, i) => {
+    const thing = picks[i];
+    if (spec.ask === "name") {
+      // 이름으로 하나 — 선반엔 서로 다른 물건 셋, 손님은 범위 안 숫자 친구
+      const others = shuffle(
+        goods.filter((g) => g !== thing),
+        rng,
+      ).slice(0, 2);
+      return { named: true, n: 1, thing, other: others[0], shelf: shuffle([thing, ...others], rng), friend: n };
+    }
+    const other = pickOne(
+      goods.filter((g) => g !== thing),
+      rng,
+    );
+    const extra = n <= 3 ? 1 : 2;
+    const shelf = shuffle([...Array<string>(n + extra).fill(thing), other, other], rng);
+    return { named: false, n, thing, other, shelf, friend: n };
+  });
+}
+
+/** 수직선 밝히기 — 더할 블록은 막대 보기(1~4) 안에서, 합은 max(10 까지) 이하 */
+function numberLineRounds(spec: Extract<ActivitySpec, { kind: "number-line" }>, rng: Rng): NumberLineRound[] {
+  const max = Math.max(2, Math.min(LINE_END, spec.max));
+  const pairs = addPairs(max).filter(([, b]) => b <= 4);
+  return cycle(pairs, spec.rounds, rng).map(([a, b]) => ({ a, b, bars: shuffle([1, 2, 3, 4], rng) }));
+}
+
 export function buildActivity(spec: ActivitySpec, rng: Rng): BuiltActivity {
   switch (spec.kind) {
     case "meet":
@@ -398,6 +595,22 @@ export function buildActivity(spec: ActivitySpec, rng: Rng): BuiltActivity {
       return { kind: "subtract", rounds: arithRounds(spec, rng) };
     case "sort":
       return { kind: "sort", rounds: sortRounds(spec, rng) };
+    case "count-up":
+      return { kind: "count-up", rounds: countUpRounds(spec, rng) };
+    case "match":
+      return { kind: "match", rounds: matchRounds(spec, rng) };
+    case "farm":
+      return { kind: "farm", rounds: farmRounds(spec, rng) };
+    case "tally":
+      return { kind: "tally", board: tallyBoard(spec, rng) };
+    case "shape-pair":
+      return { kind: "shape-pair", rounds: shapePairRounds(spec, rng) };
+    case "dice":
+      return { kind: "dice", rounds: diceRounds(spec, rng) };
+    case "shop":
+      return { kind: "shop", rounds: shopRounds(spec, rng) };
+    case "number-line":
+      return { kind: "number-line", rounds: numberLineRounds(spec, rng) };
   }
 }
 

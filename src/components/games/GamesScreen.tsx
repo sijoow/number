@@ -8,6 +8,7 @@ import { menuOf } from "@/curriculum/menus";
 import { MAX_NUMBER } from "@/curriculum/numbers";
 import { originalOf, ORIGINALS, type Original, type OriginalId } from "@/curriculum/originals";
 import { currentAuth, useIsMaster } from "@/lib/auth";
+import { giftOpen, nextGift } from "@/lib/missions";
 import { buildOriginal, type BuiltOriginal } from "@/lib/originals";
 import { finishGame, localDay, topNumber } from "@/lib/progress";
 import { seededRng } from "@/lib/rounds";
@@ -17,14 +18,24 @@ import { pick, say, stopVoice } from "@/lib/voice";
 import type { OnDone } from "../play/types";
 import { BlockMaker } from "./BlockMaker";
 import { DrumCount } from "./DrumCount";
+import { EggNumber } from "./EggNumber";
+import { HideLine } from "./HideLine";
+import { Meal } from "./Meal";
+import { MoreLess } from "./MoreLess";
+import { NumBoard } from "./NumBoard";
+import { NumTrain } from "./NumTrain";
 import { OriginalArt } from "./OriginalArt";
+import { Parts } from "./Parts";
+import { Rocket } from "./Rocket";
 import { Seesaw } from "./Seesaw";
 import { ShadowFriend } from "./ShadowFriend";
 import { ShareSnack } from "./ShareSnack";
+import { TenFrame } from "./TenFrame";
 import { YutGame } from "./YutGame";
 
 /*
  * 숫자 놀이 — 우리가 같이 만든 오리지널 숫자 게임 여섯(curriculum/originals). 진도와 상관없이 늘 열려 있고, 수는 만난 친구까지.
+ * 뒤의 선물 놀이는 미션 도장을 받을 때마다 하나씩 열린다(curriculum/gifts) — 잠긴 카드에 다음 선물을 표시.
  * 블록은 놀이터처럼 놀이마다 하루 첫 판만 1개(lib/progress finishGame).
  */
 
@@ -36,11 +47,13 @@ function freshOriginal(id: OriginalId, top: number): { built: BuiltOriginal; sta
   return { built: buildOriginal(id, top, seededRng(now)), startedAt: now };
 }
 
-/** 오늘의 미션에서 바로 왔으면(?g=놀이) 그 놀이로 시작 — 첫 렌더에 한 번 */
+/** 오늘의 미션에서 바로 왔으면(?g=놀이) 그 놀이로 시작 — 첫 렌더에 한 번. 아직 안 받은 선물 놀이면 목록으로 */
 function initialPhase(): Phase {
   const game = originalOf(new URLSearchParams(window.location.search).get("g") ?? "");
   if (!game) return { name: "list" };
-  const top = currentAuth()?.user.role === "master" ? MAX_NUMBER : topNumber(readSaved().progress);
+  const master = currentAuth()?.user.role === "master";
+  if (!giftOpen(readSaved().progress, game.id, master)) return { name: "list" };
+  const top = master ? MAX_NUMBER : topNumber(readSaved().progress);
   return { name: "playing", game, ...freshOriginal(game.id, top) };
 }
 
@@ -58,6 +71,24 @@ function Play({ built, onDone }: { built: BuiltOriginal; onDone: OnDone }) {
       return <ShareSnack rounds={built.rounds} onDone={onDone} />;
     case "drum":
       return <DrumCount rounds={built.rounds} drummer={built.drummer} onDone={onDone} />;
+    case "eggs":
+      return <EggNumber rounds={built.rounds} onDone={onDone} />;
+    case "parts":
+      return <Parts rounds={built.rounds} onDone={onDone} />;
+    case "more-less":
+      return <MoreLess game={built.game} onDone={onDone} />;
+    case "hide-line":
+      return <HideLine rounds={built.rounds} onDone={onDone} />;
+    case "meal":
+      return <Meal rounds={built.rounds} onDone={onDone} />;
+    case "num-train":
+      return <NumTrain rounds={built.rounds} onDone={onDone} />;
+    case "rocket":
+      return <Rocket rounds={built.rounds} onDone={onDone} />;
+    case "ten-frame":
+      return <TenFrame rounds={built.rounds} onDone={onDone} />;
+    case "num-board":
+      return <NumBoard rounds={built.rounds} onDone={onDone} />;
   }
 }
 
@@ -77,6 +108,7 @@ export default function GamesScreen() {
   if (!saved) return <Splash />;
 
   const top = master ? MAX_NUMBER : topNumber(saved.progress);
+  const gift = nextGift(saved.progress);
 
   const start = (g: Original) => {
     sfx.wake();
@@ -104,11 +136,31 @@ export default function GamesScreen() {
 
   return (
     <ModeShell title={menu.title} icon={menu.icon} iconId={`menu:${menu.id}`} scene="free">
-      {/* 세로 화면은 카드 여섯 장이 화면보다 낮아 아래가 비었다 — 위아래 가운데로(사용자 10-27, 넘치면 그대로 스크롤) */}
-      <div className="mx-auto grid max-w-5xl grid-cols-2 gap-4 p-5 pb-8 sm:grid-cols-3 portrait:min-h-full portrait:content-center portrait:gap-3 portrait:p-3">
-        {ORIGINALS.map((g) => (
-          <MenuCard key={g.id} tone={g.tone} art={<OriginalArt id={g.id} />} artClassName="aspect-[4/3]" title={g.title} sub={g.learn} onClick={() => start(g)} />
-        ))}
+      {/* 세로 화면은 카드가 화면보다 낮으면 아래가 비었다 — 위아래 가운데로(사용자 10-27, 넘치면 그대로 스크롤) */}
+      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 p-5 pb-8 sm:grid-cols-3 lg:grid-cols-5 portrait:min-h-full portrait:content-center portrait:gap-3 portrait:p-3">
+        {ORIGINALS.map((g) => {
+          const open = giftOpen(saved.progress, g.id, master);
+          return (
+            <MenuCard
+              key={g.id}
+              tone={g.tone}
+              art={<OriginalArt id={g.id} />}
+              artClassName="aspect-[4/3]"
+              title={g.title}
+              sub={open ? g.learn : undefined}
+              locked={!open}
+              lockText={gift?.id === g.id ? "다음 선물이에요" : "미션 도장으로 열려요"}
+              onClick={() => {
+                if (!open) {
+                  sfx.boop();
+                  void say(LINES.locked);
+                  return;
+                }
+                start(g);
+              }}
+            />
+          );
+        })}
       </div>
       {phase.name === "done" && (
         <DoneBurst earned={phase.earned} text="놀이 끝!" nextLabel="또 할래" onNext={() => start(phase.game)} secondLabel="다른 놀이" onSecond={() => setPhase({ name: "list" })} />

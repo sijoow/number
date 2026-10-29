@@ -5,13 +5,18 @@ import { useEffect, useState } from "react";
 import { BlockIcon, FriendArt, Guide } from "@/components/Art";
 import { Icon } from "@/components/Icon";
 import { ActivityHost } from "@/components/play/ActivityHost";
-import { KIND_ICON } from "@/components/play/kindIcon";
+import { DayPath } from "@/components/play/DayPath";
+import { KIND_ICON, KIND_LABEL } from "@/components/play/kindIcon";
+import { SuccessCard } from "@/components/play/StarFly";
+import { StepDots } from "@/components/play/StepDots";
 import type { ActivityResult } from "@/components/play/types";
-import { Backdrop, BlockCount, PlayIcon, Splash, SquishButton, UiIcon } from "@/components/ui";
-import { chapterOf, dayPlan, practicePlan } from "@/curriculum/course";
+import { ReadAlong } from "@/components/ReadAlong";
+import { Backdrop, BlockCount, MapGlyph, Splash, SquishButton, UiIcon, usePortrait } from "@/components/ui";
+import { dayPlan, practicePlan } from "@/curriculum/course";
 import { LINES } from "@/curriculum/lines";
+import type { ActivityKind } from "@/curriculum/types";
 import { currentAuth, useIsMaster } from "@/lib/auth";
-import { BLOCK_PER_ACTIVITY, blocksFor, canPlayToday, completeSession, currentSession, localDay, meetsOf, passedOf, type SessionRef, type SessionResult } from "@/lib/progress";
+import { BLOCK_PER_ACTIVITY, blocksFor, canPlayToday, completeSession, currentSession, localDay, meetsOf, passedOf, runOf, stepRun, type SessionRef, type SessionResult } from "@/lib/progress";
 import { buildSession, seededRng, type BuiltActivity } from "@/lib/rounds";
 import { sfx } from "@/lib/sfx";
 import { readSaved, updateSaved, useSaved, useToday } from "@/lib/store";
@@ -20,13 +25,20 @@ import { say, stopVoice } from "@/lib/voice";
 type Moved = "day" | "practice" | "stamp" | "chapter";
 
 type Phase =
-  | { name: "ready" }
+  | { name: "path" }
   | { name: "playing"; ref: SessionRef; built: BuiltActivity[]; idx: number; score: SessionResult; startedAt: number }
   | { name: "reward"; ref: SessionRef; earned: number; passed: boolean | null; moved: Moved | null; friends: number[] };
 
+/*
+ * 오늘의 놀이 — 시작하기를 누르면 「오늘의 길」(components/play/DayPath): 그날 놀이가 길 위 칸이고, 반짝이는 칸을 눌러 하나씩 깬다
+ * (2026-10-29 사용자: 업체처럼 하루 미션을 칸으로 — 깬 칸 ✓, 다시 열리지 않음). 한 칸을 깨면 「성공!」 창 → 길로 돌아와 다음 칸.
+ * 몇 칸까지 깼는지는 진도에 둔다(lib/progress run) — 중간에 나가도 다시 오면 그 칸부터. 마지막 칸을 깨면 하루 끝(블록·새 친구·도장).
+ * 놀이 중 ✕ 는 길로(그 놀이만 처음부터).
+ */
+
 /**
  * ?preview=c1d3 (연습 놀이는 c1p) — 부모 페이지 '미리 보기'. 진도에 남기지 않는다.
- *   &step=2  그 놀이부터    &auto=1  시작 버튼 없이 바로(화면 점검용, 판 순서 고정)
+ *   &step=2  그 칸까지 깬 길로    &auto=1  길 없이 그 놀이로 바로(화면 점검용, 판 순서 고정)
  */
 function readPreview(): { ref: SessionRef; step: number; auto: boolean } | null {
   const q = new URLSearchParams(window.location.search);
@@ -36,6 +48,23 @@ function readPreview(): { ref: SessionRef; step: number; auto: boolean } | null 
   if (!plan) return null;
   const step = Math.max(0, Math.min(plan.activities.length - 1, Number(q.get("step")) || 0));
   return { ref: { key: "preview", practice: Boolean(m[3]), plan }, step, auto: q.get("auto") === "1" };
+}
+
+/** 놀이 이름 카드를 보여 주는 시간 — 그다음 놀이가 시작해서 말한다 */
+const TITLE_MS = 1500;
+
+/** 놀이마다 처음 잠깐 — 큰 그림과 이름(2026-10-29 사용자: 업체 놀이처럼 시작 전에 무슨 놀이인지) */
+function TitleCard({ kind }: { kind: ActivityKind }) {
+  return (
+    <div className="grid min-h-full place-items-center p-6">
+      <div className="glass flex animate-pop-in flex-col items-center gap-3 rounded-[2.4rem] px-14 py-8 short:gap-1 short:py-5">
+        <span className="text-[min(20vh,7.5rem)] leading-none">
+          <Icon id={`play:${kind}`} emoji={KIND_ICON[kind]} />
+        </span>
+        <p className="title-pop text-5xl portrait:text-4xl short:text-4xl">{KIND_LABEL[kind]}</p>
+      </div>
+    </div>
+  );
 }
 
 function dayLabel(ref: SessionRef): string {
@@ -53,14 +82,28 @@ export default function SessionScreen() {
   const [phase, setPhase] = useState<Phase>(() =>
     preview?.auto
       ? { name: "playing", ref: preview.ref, built: buildSession(preview.ref.plan, seededRng(1)), idx: preview.step, score: { correct: 0, total: 0, activities: 0, bonus: 0 }, startedAt: 0 }
-      : { name: "ready" },
+      : { name: "path" },
   );
+  const portrait = usePortrait();
+  /** 미리 보기의 길 — 진도에 남기지 않고 이 화면에서만 */
+  const [previewRun, setPreviewRun] = useState(() => ({ done: preview?.step ?? 0, score: { correct: 0, total: 0, activities: 0, bonus: 0 } as SessionResult, startedAt: 0 }));
   const [askExit, setAskExit] = useState(false);
+  /** 놀이 하나를 마친 「성공!」 창 — 별 수, 「완료」를 누르면 다음 놀이로 */
+  const [cheer, setCheer] = useState<{ stars: number; go: () => void } | null>(null);
+  /** 이름 카드를 다 보여 준 놀이 번호 — 그 놀이부터 판을 연다 */
+  const [titled, setTitled] = useState(-1);
+  const playingIdx = phase.name === "playing" ? phase.idx : -1;
+
+  useEffect(() => {
+    if (playingIdx < 0) return;
+    const t = window.setTimeout(() => setTitled(playingIdx), TITLE_MS);
+    return () => window.clearTimeout(t);
+  }, [playingIdx]);
 
   useEffect(() => {
     const s = readSaved();
     const allowed = currentAuth()?.user.role === "master" || canPlayToday(s.progress, s.settings, localDay(new Date()));
-    if (!preview?.auto) void say(allowed || preview ? LINES.sessionStart : LINES.doneToday);
+    if (!preview?.auto) void say(allowed || preview ? LINES.path : LINES.doneToday);
     return () => stopVoice();
   }, [preview]);
 
@@ -68,19 +111,32 @@ export default function SessionScreen() {
 
   const live = preview?.ref ?? currentSession(saved.progress);
   const allowed = preview || master ? true : canPlayToday(saved.progress, saved.settings, today);
-  const chapter = live ? chapterOf(live.plan.chapter) : undefined;
+  // 오늘의 길 — 몇 칸 깼나(미리 보기는 이 화면에서만)
+  const run = preview ? previewRun : runOf(saved.progress, live);
 
-  const start = () => {
+  /** 길의 칸을 눌렀다 — 지금 칸만 열린다(깬 칸·앞 칸은 반짝이는 칸을 알려 준다) */
+  const pick = (i: number) => {
     if (!live) return;
     sfx.wake();
+    if (!allowed) {
+      sfx.boop();
+      void say(LINES.doneToday);
+      return;
+    }
+    if (i !== run.done) {
+      sfx.boop();
+      void say(LINES.path);
+      return;
+    }
     sfx.pop();
+    setTitled(-1);
     setPhase({
       name: "playing",
       ref: live,
       built: buildSession(live.plan, seededRng(Date.now())),
-      idx: preview?.step ?? 0,
-      score: { correct: 0, total: 0, activities: 0, bonus: 0 },
-      startedAt: Date.now(),
+      idx: i,
+      score: run.score,
+      startedAt: run.startedAt || Date.now(),
     });
   };
 
@@ -111,8 +167,20 @@ export default function SessionScreen() {
   const onActivityDone = (r: ActivityResult) => {
     if (phase.name !== "playing") return;
     const score = { correct: phase.score.correct + r.correct, total: phase.score.total + r.total, activities: phase.score.activities + 1, bonus: (phase.score.bonus ?? 0) + (r.bonus ?? 0) };
-    if (phase.idx + 1 < phase.built.length) setPhase({ ...phase, idx: phase.idx + 1, score });
-    else finish(phase.ref, score, phase.startedAt);
+    const go = () => {
+      setCheer(null);
+      if (phase.idx + 1 >= phase.built.length) {
+        finish(phase.ref, score, phase.startedAt);
+        return;
+      }
+      // 한 칸 깼다 — 길로 돌아가 다음 칸(진도에 남겨 두어 나갔다 와도 그 칸부터)
+      if (preview) setPreviewRun({ done: phase.idx + 1, score, startedAt: phase.startedAt });
+      else updateSaved((s) => ({ ...s, progress: stepRun(s.progress, phase.ref, r, Date.now()) }));
+      setPhase({ name: "path" });
+      void say(LINES.pathNext);
+    };
+    // 별 — 점수 놀이는 처음에 맞힌 수(하나는 꼭), 쓰기·만나기는 셋
+    setCheer({ stars: r.total > 0 ? Math.max(1, r.correct) : 3, go });
   };
 
   const goHome = () => {
@@ -133,28 +201,31 @@ export default function SessionScreen() {
           >
             <UiIcon name="close" />
           </button>
-          <ol className="glass flex min-w-0 items-center gap-2 rounded-full px-3 py-1.5 portrait:gap-1 portrait:px-2 portrait:py-1" aria-label="오늘의 놀이 순서">
-            {phase.built.map((b, i) => (
-              <li
-                key={i}
-                className={`grid place-items-center rounded-full transition-all ${
-                  i < phase.idx
-                    ? "h-11 w-11 bg-butter font-extrabold portrait:h-8 portrait:w-8"
-                    : i === phase.idx
-                      ? "h-14 w-14 animate-breathe bg-brand-soft ring-4 ring-brand portrait:h-10 portrait:w-10 portrait:ring-2"
-                      : "h-11 w-11 bg-paper-deep/60 opacity-60 portrait:h-8 portrait:w-8"
-                }`}
-              >
-                <span className={i === phase.idx ? "text-3xl portrait:text-2xl" : "text-xl portrait:text-base"}>{i < phase.idx ? "✓" : <Icon id={`play:${b.kind}`} emoji={KIND_ICON[b.kind]} />}</span>
-              </li>
-            ))}
-          </ol>
+          {/* 어디쯤 — "3장 · 2일째 · 1번째 칸 › 수 세기 기초" */}
+          <div className="glass flex min-w-0 items-center gap-2 rounded-full px-4 py-1.5 text-xl font-extrabold portrait:gap-1.5 portrait:px-3 portrait:text-base">
+            <span className="text-3xl leading-none portrait:text-2xl">
+              <Icon id={`play:${phase.built[phase.idx].kind}`} emoji={KIND_ICON[phase.built[phase.idx].kind]} />
+            </span>
+            <span className="truncate">
+              <span className="text-ink-soft portrait:hidden">
+                {dayLabel(phase.ref)} · {phase.idx + 1}번째 칸 ›
+              </span>{" "}
+              {KIND_LABEL[phase.built[phase.idx].kind]}
+            </span>
+          </div>
           <BlockCount n={phase.score.activities * BLOCK_PER_ACTIVITY} />
         </header>
+        <StepDots />
 
         <section className="relative z-0 min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
-          <ActivityHost key={phase.idx} built={phase.built[phase.idx]} assess={phase.ref.plan.stamp} onDone={onActivityDone} />
+          {titled === phase.idx ? (
+            <ActivityHost key={phase.idx} built={phase.built[phase.idx]} assess={phase.ref.plan.stamp} onDone={onActivityDone} />
+          ) : (
+            <TitleCard key={phase.idx} kind={phase.built[phase.idx].kind} />
+          )}
         </section>
+
+        {cheer && <SuccessCard key={phase.idx} stars={cheer.stars} onNext={cheer.go} />}
 
         {askExit && (
           <div className="absolute inset-0 z-50 grid place-items-center bg-ink/30 backdrop-blur-sm">
@@ -165,8 +236,17 @@ export default function SessionScreen() {
                 <button type="button" className="cta w-full rounded-full py-4 text-3xl font-extrabold" onClick={() => setAskExit(false)}>
                   계속할래
                 </button>
-                <SquishButton tone="card" className="w-full rounded-full py-3.5 text-2xl" onClick={goHome}>
-                  그만할래
+                <SquishButton
+                  tone="card"
+                  className="w-full rounded-full py-3.5 text-2xl"
+                  onClick={() => {
+                    stopVoice();
+                    setAskExit(false);
+                    setCheer(null);
+                    setPhase({ name: "path" });
+                  }}
+                >
+                  길로 갈래
                 </SquishButton>
               </div>
             </div>
@@ -182,8 +262,8 @@ export default function SessionScreen() {
       <main className="relative grid h-dvh place-items-center overflow-y-auto">
         <Backdrop />
         {/* 높이가 낮은 화면(폰 가로)은 두 칸 — 왼쪽 축하, 오른쪽 새 친구·집으로. 한 줄로 쌓으면 「집으로」가 화면 밖으로 밀린다(2026-10-27) */}
-        <div className="relative flex flex-col items-center gap-5 py-6 short:flex-row short:gap-10 short:py-3">
-          <div className="flex flex-col items-center gap-5 short:gap-2">
+        <div className="relative flex flex-col items-center gap-5 py-6 low:flex-row low:gap-10 low:py-3">
+          <div className="flex flex-col items-center gap-5 low:gap-3 short:gap-2">
             <div className="relative">
               <Guide size={200} mood="cheer" className="animate-float" />
               {Array.from({ length: pieces }, (_, i) => {
@@ -200,7 +280,7 @@ export default function SessionScreen() {
               <BlockIcon size={56} /> +{phase.earned}
             </div>
           </div>
-          <div className="flex flex-col items-center gap-5 short:max-w-[46vw] short:gap-3">
+          <div className="flex flex-col items-center gap-5 low:max-w-[46vw] low:gap-3">
             {phase.friends.length > 0 && (
               <div className="glass flex flex-col items-center gap-2 rounded-[2rem] px-6 py-3">
                 <p className="text-2xl font-extrabold">새 숫자 친구!</p>
@@ -220,64 +300,90 @@ export default function SessionScreen() {
               <p className="rounded-full bg-lilac px-7 py-2 text-2xl short:rounded-[1.6rem] short:text-center short:text-xl">{phase.moved === "chapter" ? "다음 장으로 가요 — 부모 페이지에 '다시 볼 장'으로 남아요" : "다음에는 연습 놀이를 하고 다시 도전해요"}</p>
             )}
             {preview && <p className="font-body text-xl text-ink-soft">미리 보기라 진도에는 남지 않았어요</p>}
-            <button type="button" className="cta mt-2 rounded-full px-16 py-5 text-4xl font-extrabold short:mt-0 short:py-4" onClick={goHome}>
-              집으로
-            </button>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-3 short:mt-0">
+              {/* 하루 제한이 없으면 이어서 다음 날의 길로(업체처럼 다음 섬으로) */}
+              {!preview && currentSession(saved.progress) && (master || canPlayToday(saved.progress, saved.settings, today)) && (
+                <button
+                  type="button"
+                  className="cta rounded-full px-10 py-5 text-4xl font-extrabold short:py-4"
+                  onClick={() => {
+                    sfx.wake();
+                    setPhase({ name: "path" });
+                    void say(LINES.path);
+                  }}
+                >
+                  다음 길로
+                </button>
+              )}
+              <SquishButton tone="card" className="rounded-full px-12 py-4 text-3xl" onClick={goHome}>
+                집으로
+              </SquishButton>
+            </div>
           </div>
         </div>
       </main>
     );
   }
 
-  // 준비 화면
+  // 오늘의 길
   return (
-    <main className="relative grid h-dvh place-items-center overflow-y-auto">
+    <main className="relative flex h-dvh flex-col overflow-hidden">
       <Backdrop />
-      <button
-        type="button"
-        className="glass absolute left-5 top-4 z-10 grid h-14 w-14 place-items-center rounded-full text-3xl transition-transform active:scale-90 portrait:left-3 portrait:top-[calc(0.75rem_+_var(--cam))] portrait:h-12 portrait:w-12"
-        onClick={goHome}
-        aria-label="집으로"
-      >
-        <UiIcon name="home" />
-      </button>
-      {preview && <div className="glass absolute right-6 top-5 z-10 rounded-full px-5 py-2 font-body text-lg portrait:right-3 portrait:top-[calc(0.75rem_+_var(--cam))] portrait:text-sm">미리 보기 · 진도에 남지 않아요</div>}
-      <div className="relative flex flex-col items-center gap-6 py-6">
-        <Guide size={190} className="animate-float" />
-        {live ? (
-          <div className="glass flex w-[min(92vw,30rem)] flex-col items-center rounded-[2.2rem] px-8 pb-7 pt-5 text-center">
-            <span className="rounded-full bg-brand-soft px-3 py-1 text-sm font-extrabold text-brand-deep">{dayLabel(live)}</span>
-            <p className="mt-2 text-[2.6rem] font-extrabold leading-tight break-keep portrait:text-4xl">{live.plan.title}</p>
-            {chapter && <p className="mt-1 font-body text-lg text-ink-soft">{chapter.goal}</p>}
-            {(live.plan.stamp || live.practice) && (
-              <div className="mt-2 flex gap-2">
-                {live.plan.stamp && (
-                  <span className="rounded-full bg-butter px-3 py-1 text-base font-bold">
-                    <Icon emoji="⭐" /> 도장 놀이 날
-                  </span>
-                )}
-                {live.practice && <span className="rounded-full bg-lilac px-3 py-1 text-base font-bold">연습하고 다시 도전!</span>}
-              </div>
-            )}
-            {allowed ? (
-              <button type="button" onClick={start} className="cta mt-6 flex w-full items-center justify-center gap-3 rounded-full py-4 text-[2rem] font-extrabold">
-                <span className="grid h-11 w-11 place-items-center rounded-full bg-white/95 text-2xl text-brand">
-                  <PlayIcon />
-                </span>
-                시작하기
-              </button>
-            ) : (
-              <p className="mt-5 rounded-full bg-paper px-6 py-2.5 text-2xl font-bold">
-                오늘 놀이 끝! 내일 또 만나 <Icon emoji="🌙" />
-              </p>
-            )}
+      <header className="relative z-20 flex items-center justify-between gap-3 px-5 pt-4 portrait:gap-2 portrait:px-3 portrait:pt-[calc(0.75rem_+_var(--cam))]">
+        <button
+          type="button"
+          className="glass grid h-14 w-14 shrink-0 place-items-center rounded-full text-3xl transition-transform active:scale-90 portrait:h-12 portrait:w-12"
+          onClick={goHome}
+          aria-label="집으로"
+        >
+          <UiIcon name="home" />
+        </button>
+        {live && (
+          <div className="glass flex min-w-0 flex-col items-center rounded-[1.6rem] px-5 py-1.5 text-center portrait:px-3">
+            <span className="text-sm font-extrabold text-brand-deep">
+              {dayLabel(live)}
+              {live.plan.stamp ? " · 도장 놀이 날" : live.practice ? " · 연습하고 다시 도전!" : ""}
+            </span>
+            <span className="max-w-full truncate text-2xl font-extrabold leading-tight portrait:text-xl">{live.plan.title}</span>
           </div>
-        ) : (
+        )}
+        <button
+          type="button"
+          onClick={() => {
+            stopVoice();
+            router.push("/map");
+          }}
+          className="glass flex h-12 shrink-0 items-center gap-1.5 rounded-full px-4 text-base font-extrabold active:scale-95 portrait:px-3"
+          aria-label="모험 지도"
+        >
+          <MapGlyph />
+          <span className="portrait:hidden">모험 지도</span>
+        </button>
+      </header>
+      {preview && <p className="relative z-10 mt-2 self-center rounded-full bg-white/80 px-4 py-1 font-body text-base">미리 보기 · 진도에 남지 않아요</p>}
+      {live ? (
+        <>
+          <div className="relative z-10 mt-2 flex justify-center px-4">
+            <p className="glass rounded-full px-6 py-2 text-center text-2xl font-extrabold short:py-1 short:text-lg portrait:text-xl">
+              <ReadAlong text={allowed ? (run.done > 0 ? LINES.pathNext : LINES.path) : LINES.doneToday} />
+            </p>
+          </div>
+          <section className="relative z-0 mx-auto min-h-0 w-full max-w-[68rem] flex-1 px-[5vw] pb-[7vh] pt-[11vh] portrait:px-6 portrait:pb-[8vh] portrait:pt-[9vh] short:pt-[13vh]">
+            <DayPath kinds={live.plan.activities.map((a) => a.kind)} done={run.done} stamp={live.plan.stamp} portrait={portrait} locked={!allowed} onPick={pick} />
+          </section>
+          {!allowed && (
+            <button type="button" onClick={() => router.push("/free")} className="cta relative z-10 mb-5 self-center rounded-full px-8 py-3 text-2xl font-extrabold">
+              내일 또 만나요 · 놀이터 가기
+            </button>
+          )}
+        </>
+      ) : (
+        <div className="grid flex-1 place-items-center">
           <p className="glass rounded-full px-8 py-3 text-3xl font-bold">
             모든 놀이를 다 했어요! <Icon emoji="🎉" />
           </p>
-        )}
-      </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -142,6 +142,9 @@ export default function TowerScreen() {
 
   const p = saved?.progress;
   const v = villageOf(p?.towerPlaced ?? 0);
+  // 짓는 집·놓은 수 — 시범 위치가 바뀌는 때(이름이 current 라 ref 로 오해받지 않게 따로 꺼내 둔다)
+  const building = v.current;
+  const placedHere = v.have;
   const left = p ? wallet(p) : 0;
   const showHint = !touched && left > 0 && fresh === null;
 
@@ -175,7 +178,7 @@ export default function TowerScreen() {
       window.clearTimeout(id);
       anim?.cancel();
     };
-  }, [showHint, v.current, v.have]);
+  }, [showHint, building, placedHere]);
 
   if (!saved) return <Splash />;
 

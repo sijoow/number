@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { CHAPTERS, dayPlan } from "../curriculum/course.ts";
 import { GAMES } from "../curriculum/games.ts";
-import { buildActivity, buildSession, numberChoices, numbersFor, seededRng, spotsFor } from "./rounds.ts";
+import { buildActivity, buildSession, FARM_ANIMALS, numberChoices, numbersFor, seededRng, spotsFor } from "./rounds.ts";
 
 test("판마다 쓸 수 — 범위 안, 같은 수가 연달아 나오지 않는다", () => {
   const rng = seededRng(7);
@@ -94,6 +94,36 @@ test("과정표의 모든 날을 판으로 만들 수 있다 — 정답이 보�
           case "sort":
             for (const r of b.rounds) assert.ok(r.answers.length >= 2 && r.answers.length < r.cards.length);
             break;
+          case "count-up":
+            b.rounds.forEach((r, i) => {
+              assert.ok(r.choices.includes(r.n) && r.choices.length === 2);
+              // 차례 판은 하나씩 늘어나고, 섞인 판은 같은 수가 두 번 나오지 않는다
+              if (i > 0 && !r.group) assert.equal(r.n, b.rounds[i - 1].n + 1, "하나씩 늘어난다");
+              if (r.group) assert.equal(b.rounds.filter((x) => x.n === r.n).length, 1);
+            });
+            break;
+          case "match":
+            for (const r of b.rounds) assert.deepEqual([...r.bottom].sort(), [...r.top].sort());
+            break;
+          case "farm":
+          case "dice":
+            for (const r of b.rounds) assert.ok(r.choices.includes(r.n) && new Set(r.choices).size === r.choices.length);
+            break;
+          case "tally":
+            assert.deepEqual([...b.board.queue].sort((x, y) => x - y), b.board.nums);
+            break;
+          case "shape-pair":
+            for (const r of b.rounds) for (const c of r.cards) assert.equal(r.cards.filter((x) => x.shape === c.shape).length, 2);
+            break;
+          case "shop":
+            for (const r of b.rounds) {
+              if (r.named) assert.ok(r.n === 1 && r.shelf.length === 3 && new Set(r.shelf).size === 3 && r.shelf.includes(r.thing));
+              else assert.ok(r.shelf.filter((x) => x === r.thing).length > r.n && r.thing !== r.other);
+            }
+            break;
+          case "number-line":
+            for (const r of b.rounds) assert.ok(r.a >= 1 && r.b >= 1 && r.a + r.b <= 10 && r.bars.includes(r.b));
+            break;
         }
       }
     }
@@ -172,6 +202,57 @@ test("규칙 찾기 — 정답이 규칙을 잇는다", () => {
     assert.equal(r.answer, r.seq[r.seq.length - 3]);
     assert.ok(r.choices.includes(r.answer));
   }
+});
+
+test("업체 유아 단계 놀이 — 판 규칙", () => {
+  // 수 세기 기초: 범위 끝 수는 아직 안 배운 수(범위 위)를 짝으로 쓰지 않는다
+  const up = buildActivity({ kind: "count-up", range: [1, 5] }, seededRng(21));
+  if (up.kind !== "count-up") return assert.fail();
+  assert.deepEqual(
+    up.rounds.map((r) => r.n),
+    [1, 2, 3, 4, 5],
+  );
+  assert.ok(up.rounds.every((r) => r.choices.every((n) => n >= 1 && n <= 5) && !r.group));
+  // 섞인 판: 범위 안 수가 한 번씩, 차례대로는 아니고, 무리 지어
+  const mix = buildActivity({ kind: "count-up", range: [1, 5], mix: true }, seededRng(23));
+  if (mix.kind !== "count-up") return assert.fail();
+  assert.deepEqual([...mix.rounds.map((r) => r.n)].sort(), [1, 2, 3, 4, 5]);
+  assert.notDeepEqual(
+    mix.rounds.map((r) => r.n),
+    [1, 2, 3, 4, 5],
+  );
+  assert.ok(mix.rounds.every((r) => r.group));
+  // 짝 연결하기: 첫 판은 같은 차례, 다음 판은 섞인다
+  const m = buildActivity({ kind: "match", by: "same", rounds: 3 }, seededRng(22));
+  if (m.kind !== "match") return assert.fail();
+  assert.deepEqual(m.rounds[0].bottom, m.rounds[0].top);
+  assert.ok(m.rounds.slice(1).every((r) => r.bottom.some((k, j) => k !== r.top[j])));
+  // 작은 농장: 카드는 정답과 바로 옆 수(0 까지), 범위 위로는 안 간다
+  const f = buildActivity({ kind: "farm", range: [1, 3], rounds: 30 }, seededRng(23));
+  if (f.kind !== "farm") return assert.fail();
+  assert.ok(f.rounds.every((r) => r.choices.every((k) => k >= 0 && k <= 3 && Math.abs(k - r.n) <= 1)));
+  // 동물은 판마다 바뀐다 — 양·소·돼지·병아리가 다 나온다
+  assert.deepEqual([...new Set(f.rounds.map((r) => r.animal))].sort(), [...FARM_ANIMALS].sort());
+  // 주사위 찾기: 6 까지만, 작은 수부터
+  const d = buildActivity({ kind: "dice", range: [1, 10] }, seededRng(24));
+  if (d.kind !== "dice") return assert.fail();
+  assert.deepEqual(
+    d.rounds.map((r) => r.n),
+    [1, 2, 3, 4, 5, 6],
+  );
+  assert.ok(d.rounds.every((r) => r.choices.every((k) => k >= 1 && k <= 6)));
+  // 가게 놀이: "개"로 세는 물건만
+  const s = buildActivity({ kind: "shop", range: [1, 10], rounds: 40 }, seededRng(25));
+  if (s.kind !== "shop") return assert.fail();
+  assert.ok(s.rounds.every((r) => !["fish", "chick", "butterfly"].includes(r.thing) && r.friend === r.n && !r.named));
+  // 이름으로 하나: 선반엔 서로 다른 물건 셋, 손님은 범위 안 친구
+  const sn = buildActivity({ kind: "shop", range: [1, 5], rounds: 20, ask: "name" }, seededRng(27));
+  if (sn.kind !== "shop") return assert.fail();
+  assert.ok(sn.rounds.every((r) => r.named && r.n === 1 && new Set(r.shelf).size === 3 && r.friend >= 1 && r.friend <= 5));
+  // 수직선 밝히기: 더할 블록은 막대(1~4) 안에서
+  const l = buildActivity({ kind: "number-line", max: 3, rounds: 10 }, seededRng(26));
+  if (l.kind !== "number-line") return assert.fail();
+  assert.ok(l.rounds.every((r) => r.a + r.b <= 3 && r.b <= 4));
 });
 
 test("놀이터 놀이 — 아는 수 범위로 판이 만들어진다", () => {

@@ -2,6 +2,8 @@
 
 /* 폰을 가로로 든 화면처럼 높이가 낮을 때 — short:text-xl 처럼 쓴다 */
 @custom-variant short (@media (max-height: 520px));
+/* 가로로 든 화면 중 높이가 720px 아래 — 노트북·태블릿 가로. 세로로 쌓으면 넘칠 화면을 두 칸으로 */
+@custom-variant low (@media (orientation: landscape) and (max-height: 720px));
 
 /*
   하온이의 숫자놀이 — 한글나라와 같은 화면 틀(유리 카드·말랑 버튼·큰 글씨)에 숫자 블록 색.
@@ -76,6 +78,17 @@
   --animate-stamp-in: stamp-in 0.55s cubic-bezier(0.2, 1.4, 0.4, 1) both;
   --animate-merge-out: merge-out 0.35s ease-in both;
   --animate-leave-up: leave-up 0.6s ease-in both;
+  --animate-star-fly: star-fly 1.2s cubic-bezier(0.3, 0.9, 0.4, 1) both;
+  /* 작은 농장 동물 — 천천히 걸어 들어가게(2026-10-29 사용자: 너무 빨리 달린다) */
+  --animate-walk-in: walk-in 1.9s ease-in-out both;
+  --animate-walk-out: walk-out 1.3s ease-in both;
+  --animate-hop: hop 0.55s ease-in-out infinite;
+  /* 거울 그림 — 맞으면 두 판이 가운데 접는 선으로 모였다가(책을 덮듯) 다시 펴진다 */
+  --animate-fold-l: fold-l 2s ease-in-out both;
+  --animate-fold-r: fold-r 2s ease-in-out both;
+  --animate-glow: glow 0.9s ease-in-out 2;
+  /* 여기에 해 — 판이 시작될 때 할 곳이 두 번 반짝이고 사라진다(거울 그림 오른쪽 판) */
+  --animate-here: here 1.4s ease-in-out 0.35s both;
 
   /* 주사위 윷놀이 큰 주사위 — 하늘에서 쿵 떨어져 한 번 튀고, 도로로로 세 번 굴러가다(90도씩) 가운데에 반듯하게 멈춘다 */
   @keyframes die-tumble {
@@ -251,6 +264,114 @@
     100% {
       transform: translateY(-160%);
       opacity: 0;
+    }
+  }
+  /* 정답 별 — 가운데서 톡 커졌다가 오른쪽 위(블록 수)로 날아간다(lib/stars) */
+  @keyframes star-fly {
+    0% {
+      transform: translate(-50%, -50%) scale(0.2);
+      opacity: 0;
+    }
+    22% {
+      transform: translate(-50%, -50%) scale(1.25);
+      opacity: 1;
+    }
+    42% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(calc(-50% + 38vw), calc(-50% - 42vh)) scale(0.3);
+      opacity: 0;
+    }
+  }
+  /* 작은 농장 — 병아리가 왼쪽에서 걸어와 헛간 문으로 쏙(문 앞에서 작아지며 사라진다) */
+  @keyframes walk-in {
+    0% {
+      transform: translateX(-38vw);
+      opacity: 1;
+    }
+    82% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(0) scale(0.55);
+      opacity: 0;
+    }
+  }
+  /* 작은 농장 — 확인이 끝나면 오른쪽으로 걸어 나간다 */
+  @keyframes walk-out {
+    0% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(40vw);
+      opacity: 0;
+    }
+  }
+  /* 거울 그림 접기 — 두 판이 앞으로 들려 가운데 접는 선에서 만났다가(책을 덮듯) 다시 펴진다. 축은 판 밖 접는 선(transform-origin 은 쓰는 곳에서).
+     다 덮으면(90°) 옆에서 보는 셈이라 판이 안 보이니 80° 까지만 */
+  @keyframes fold-l {
+    0% {
+      transform: perspective(1400px) rotateY(0deg);
+    }
+    38%,
+    62% {
+      transform: perspective(1400px) rotateY(80deg);
+    }
+    100% {
+      transform: perspective(1400px) rotateY(0deg);
+    }
+  }
+  @keyframes fold-r {
+    0% {
+      transform: perspective(1400px) rotateY(0deg);
+    }
+    38%,
+    62% {
+      transform: perspective(1400px) rotateY(-80deg);
+    }
+    100% {
+      transform: perspective(1400px) rotateY(0deg);
+    }
+  }
+  /* 걸을 때 통통 */
+  @keyframes hop {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-14%);
+    }
+  }
+  @keyframes here {
+    0% {
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    45% {
+      opacity: 0.35;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  /* 수직선 밝히기 — 맞으면 블록이 반짝반짝 */
+  @keyframes glow {
+    0%,
+    100% {
+      filter: brightness(1);
+    }
+    50% {
+      filter: brightness(1.35) drop-shadow(0 0 0.5rem #fff3b0);
     }
   }
 }

@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { SquishButton } from "@/components/ui";
 import { LINES } from "@/curriculum/lines";
 import { answerFeedback, useTurn } from "@/lib/answer";
+import { useStep } from "@/lib/steps";
 import { useTimers } from "@/lib/useTimers";
 import { pick, say, stopVoice } from "@/lib/voice";
 import type { OnDone } from "./types";
@@ -64,6 +65,7 @@ export function useChoice({
   const later = useTimers();
   const turn = useTurn();
   const count = answers.length;
+  useStep(idx, count);
 
   useEffect(() => {
     void say([intro, ...(prompts[0] ?? [])].filter(Boolean));
@@ -119,8 +121,27 @@ export function useChoice({
   };
 }
 
-/** 보기 카드 — 맞으면 민트 + ✓, 틀리면 복숭아 + 흔들기, 힌트면 숨쉬기 */
-export function ChoiceCard({ c, k, label, style, className = "", children }: { c: Choice; k: string; label: string; style?: CSSProperties; className?: string; children: ReactNode }) {
+/**
+ * 보기 카드 — 맞으면 민트 + ✓, 틀리면 복숭아 + 흔들기, 힌트면 숨쉬기.
+ * drag 를 주면 누르기 대신 끌어 놓기(play/dragPick — 그냥 눌러도 고른 것으로 본다)
+ */
+export function ChoiceCard({
+  c,
+  k,
+  label,
+  style,
+  className = "",
+  drag,
+  children,
+}: {
+  c: Choice;
+  k: string;
+  label: string;
+  style?: CSSProperties;
+  className?: string;
+  drag?: (e: ReactPointerEvent) => void;
+  children: ReactNode;
+}) {
   const cs = c.stateOf(k);
   const wrong = c.wasWrong(k);
   const tone = cs === "right" ? "mint" : cs === "wrong" || cs === "reveal" ? "peach" : "card";
@@ -128,9 +149,10 @@ export function ChoiceCard({ c, k, label, style, className = "", children }: { c
     <SquishButton
       tone={tone}
       aria-label={label}
-      onClick={() => c.choose(k)}
+      onClick={drag ? undefined : () => c.choose(k)}
+      onPointerDown={drag}
       className={`relative grid place-items-center rounded-[2.2rem] ${cs === "wrong" ? "animate-shake" : ""} ${cs === "right" ? "animate-wiggle" : ""} ${c.hintOn(k) ? "animate-breathe ring-8 ring-butter" : ""} ${className}`}
-      style={style}
+      style={drag ? { touchAction: "none", ...style } : style}
     >
       {/* 틀린 카드는 그림·숫자만 흐리게 — ✕ 는 또렷하게 */}
       <span className={`grid place-items-center ${wrong ? "opacity-45 grayscale" : ""}`}>{children}</span>

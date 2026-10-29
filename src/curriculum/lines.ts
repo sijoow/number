@@ -115,6 +115,66 @@ export const LINES = {
   challenge: "도전! 조금 어려운 문제야!",
   challengeWin: "도전 성공! 블록 하나 더!",
   todayFriend: "오늘의 친구야!",
+
+  // 업체 유아 단계 놀이(2026-10-28 사용자: 토도수학 유아 단계 구성요소를 따라서)
+  success: "성공!",
+  countUp: "하나씩 늘어나요! 몇 개인지 세어 볼까?",
+  matchSame: "똑같은 것끼리 선으로 이어 봐!",
+  matchNumber: "숫자와 개수가 같은 것끼리 이어 봐!",
+  farm: "동물들이 헛간에 들어가요! 몇 마리 들어가는지 잘 봐!",
+  farmQ: "헛간에 몇 마리 있을까?",
+  farmOpen: "헛간을 열어 볼까?",
+  /** 빈 카드(0)를 눌렀을 때 */
+  none: "하나도 없어!",
+  tally: "막대를 세어 보고 숫자를 칸에 넣어 봐!",
+  shapePair: "같은 모양끼리 짝을 지어 봐!",
+  dice: "주사위 눈을 세어 볼까?",
+  diceQ: "주사위를 찾아서 칸에 넣어 봐!",
+  shop: "가게 놀이! 손님이 달라는 만큼 바구니에 담아 줘!",
+  shopTooMany: "너무 많아! 몇 개 달라고 했지?",
+  shopTooFew: "조금 모자라! 몇 개 달라고 했지?",
+  shopOther: "어? 다른 물건이 들어 있어!",
+  shopThanks: "고마워! 또 올게!",
+  shopNotThis: "그건 아니야! 다시 찾아볼까?",
+  numberLine: "블록을 놓아서 수직선을 밝혀 볼까?",
+  numberLineCheck: "다 놓았으면 확인을 눌러 봐!",
+
+  // 생각 놀이(업체 「사고력 세상」 Lv.1, 2026-10-28)
+  think: `${call}, 생각 놀이를 해 볼까?`,
+  map: "모험 지도야! 반짝이는 섬에서 오늘의 놀이를 해 볼까?",
+  // 오늘의 길(2026-10-29) — 하루 놀이를 길 위 칸으로 하나씩
+  path: "오늘의 길이야! 반짝이는 칸을 눌러 봐!",
+  songs: "노래를 들어 볼까? 듣고 싶은 노래를 눌러 봐!",
+  pathNext: "잘했어! 다음 칸을 눌러 볼까?",
+  mirror: "거울처럼 똑같이 점을 찍어 봐!",
+  mirrorCheck: "다 찍었으면 확인을 눌러 봐!",
+  mirrorWrong: "어? 조금 달라. 다시 볼까?",
+  memoryLook: "잘 봐! 어디 있는지 기억해!",
+  memory: "같은 친구 둘을 찾아 봐!",
+  whoHid: "친구들을 잘 기억해!",
+  whoHidQ: "누가 숨었을까?",
+  found: "찾았다!",
+
+  // 선물 놀이(2026-10-29 사용자: 녹화해 온 업체 놀이를 우리 그림으로) — 미션 도장을 받을 때마다 하나씩 열린다
+  giftNew: "선물이야! 새 놀이가 열렸어!",
+  eggs: "알 속에 숫자 친구가 숨었어!",
+  eggsQ: "빈 알에는 어떤 숫자가 들어갈까?",
+  parts: "두 친구가 모이면 새 친구로 변신해!",
+  partsQ: "누가 와야 할까?",
+  moreLess: "블록을 넣고 빼서 숫자를 만들어 봐!",
+  hideLine: "수직선에 친구가 숨었어! 어디 숨었는지 눌러 봐!",
+  meal: "냠냠 식사 시간! 똑같을 수도 있어!",
+  same: "똑같아!",
+  numTrain: "작은 수부터 차례로 기차에 태워 줘!",
+  trainDepart: "칙칙폭폭 출발!",
+  rocket: "로켓을 쏘아 올리자! 연료 블록을 채워 봐!",
+  countdown: "이제 거꾸로 세어 볼까?",
+  liftoff: "발사!",
+  tenFrame: "열 칸을 다 채우면 십으로 변신해!",
+  numBoard: "빈칸에 들어갈 숫자를 끌어다 넣어 봐!",
+  sequence: "친구들이 차례로 반짝여! 잘 보고 똑같이 눌러 봐!",
+  sequenceGo: "이제 눌러 봐!",
+  matrix: "줄을 잘 보고 빈칸에 맞는 것을 넣어 봐!",
 } as const;
 
 /** 숫자 친구 인사 — "안녕! 나는 셋이야." */
@@ -236,7 +296,27 @@ export function shareEach(n: number): string {
   return `${nameOf(n)}씩 똑같아!`;
 }
 
-/** 모든 말을 한 줄씩 — 음성 파일 목록을 뽑을 때 쓴다 */
+/** 가게 놀이(이름으로 하나) — "딸기를 주세요!" */
+export function shopName(name: string): string {
+  return `${name}${hasBatchim(name) ? "을" : "를"} 주세요!`;
+}
+
+/** 가게 놀이 — 물건 이름 뒤에 "세 개 주세요!" (가게 물건은 "개"로 센다, 열까지) */
+export function shopAsk(n: number): string {
+  return `${modOf(n)} 개 주세요!`;
+}
+
+/** 수직선 밝히기 — "셋까지 가려면 블록이 몇 개 더 있어야 할까?" (목표 2~10) */
+export function lineAsk(t: number): string {
+  return `${nameOf(t)}까지 가려면 블록이 몇 개 더 있어야 할까?`;
+}
+
+/** 몇이랑 몇? · 하나 더 하나 덜 — "셋을 만들어 봐!" (열까지) */
+export function makeAsk(n: number): string {
+  const name = nameOf(n);
+  return `${name}${hasBatchim(name) ? "을" : "를"} 만들어 봐!`;
+}
+
 /** 출석 기차 몇째 칸 — "오늘은 넷째 날! 사가 탔어!" (car 1~7) */
 export function attendBoard(car: number): string {
   const ord = ["첫째", "둘째", "셋째", "넷째", "다섯째", "여섯째", "일곱째"][car - 1] ?? `${car}번째`;
@@ -244,6 +324,7 @@ export function attendBoard(car: number): string {
   return `오늘은 ${ord} 날! ${who}${hasBatchim(who) ? "이" : "가"} 탔어!`;
 }
 
+/** 모든 말을 한 줄씩 — 음성 파일 목록을 뽑을 때 쓴다 */
 export function allLineTexts(): string[] {
   const fixed = Object.values(LINES).flatMap((v) => (typeof v === "string" ? [v] : [...v]));
   const nums = range(1, MAX_NUMBER);
@@ -272,5 +353,11 @@ export function allLineTexts(): string[] {
     ...range(1, 10).flatMap((n) => [withAnd(n), amongOf(n), heavyIs(n)]),
     // 출석 기차 일곱 칸
     ...range(1, 7).map(attendBoard),
+    // 가게 놀이(열까지) · 수직선 밝히기(목표 2~10)
+    ...range(1, 10).map(shopAsk),
+    ...THINGS.filter((t) => t.unit === "개").map((t) => shopName(t.name)),
+    ...range(2, 10).map(lineAsk),
+    // 선물 놀이 — 몇이랑 몇?(상자 수 2~10) · 하나 더 하나 덜(목표 1~10)
+    ...range(1, 10).map(makeAsk),
   ];
 }

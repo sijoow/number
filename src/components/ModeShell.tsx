@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { BlockIcon, Guide } from "@/components/Art";
 import { Icon } from "@/components/Icon";
+import { StepDots } from "@/components/play/StepDots";
 import { Backdrop, BlockCount, UiIcon, type Scene } from "@/components/ui";
 import { usePlayClock } from "@/lib/play";
 import { wallet } from "@/lib/progress";
@@ -55,6 +56,8 @@ export function ModeShell({
         </div>
         <BlockCount n={saved ? wallet(saved.progress) : 0} />
       </header>
+      {/* 놀이 중이면 문제 진행(●→★) — 놀이가 알려 줄 때만 보인다 */}
+      <StepDots />
       {/* 내용이 화면보다 크면 잘리지 않고 스크롤 — 낮은 화면(폰 가로·주소창)에서 아래가 끊기지 않게 */}
       <section className="relative z-0 min-h-0 flex-1 overflow-x-hidden overflow-y-auto">{children}</section>
     </main>

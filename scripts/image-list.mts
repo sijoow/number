@@ -59,8 +59,27 @@ const icons: Entry[] = [
       ["add", "➕", "더하기 — a chunky rounded plus-sign shaped toy, green"],
       ["subtract", "➖", "빼기 — a chunky rounded minus-sign shaped toy, orange"],
       ["sort", "🧺", "모양 나누기 — a small woven basket holding a few colourful toy shapes"],
+      // 업체 유아 단계 놀이(2026-10-29)
+      ["count-up", "🔢", "수 세기 기초 — three yellow toy stars in a row with three small dots above them"],
+      ["match", "🔗", "짝 연결하기 — two matching red apple cards joined by a short yellow line"],
+      ["farm", "🐥", "작은 농장 — a little red barn with a white X on the door"],
+      ["tally", "🧮", "숫자 퍼즐 — a small wooden board with tally marks and one wooden number tile"],
+      ["shape-pair", "🔷", "도형 맞추기 — a big blue square and a small blue square side by side"],
+      ["dice", "🎲", "주사위 찾기 — a chunky white toy die showing three red dots"],
+      ["shop", "🛒", "가게 놀이 — a small red shopping basket with a red apple inside"],
+      ["number-line", "📐", "수직선 밝히기 — a short number line with three coloured toy cubes on it, glowing"],
     ] as const
   ).map(([id, now, what]) => ({ key: `icon:play:${id}`, kind: "icon" as const, now, what })),
+  // 생각 놀이 아이콘(2026-10-29)
+  ...(
+    [
+      ["mirror", "🦋", "거울 그림 — a symmetrical butterfly made of colourful dots, mirrored left and right"],
+      ["memory", "🃏", "짝 맞추기 — two face-down cards and one card flipped open showing a red cube"],
+      ["who-hid", "🙈", "누가 숨었을까 — a small red stage curtain half open"],
+    ] as const
+  ).map(([id, now, what]) => ({ key: `icon:think:${id}`, kind: "icon" as const, now, what })),
+  // 모험 지도(메뉴 바에는 없고 제목 아이콘으로)
+  { key: "icon:menu:map", kind: "icon", now: "🗺️", what: "메뉴 아이콘: 모험 지도 — 숫자 친구가 지도를 펼친 모습" },
 ];
 
 const scenes: Entry[] = GAMES.map((g) => ({ key: `scene:free:${g.id}`, kind: "scene", now: g.icon, what: `놀이터 카드 장면: ${g.title}` }));

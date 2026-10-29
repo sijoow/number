@@ -15,6 +15,8 @@ import {
   normalizeSettings,
   progressRate,
   restartAt,
+  runOf,
+  stepRun,
   topNumber,
   type Progress,
 } from "./progress.ts";
@@ -82,12 +84,17 @@ test("연습 놀이에서는 친구가 다시 들어오지 않는다 · 기록�
   assert.deepEqual(r.next.friends, [1, 2, 3, 4, 5]);
 });
 
-test("하루 한 번 — 하나 더 열기", () => {
+test("하루 한 번 — 처음엔 꺼짐(이어서 다음 날 것도), 부모가 켜면 하루 한 판 + 하나 더 열기", () => {
   const p = play(initialProgress()).next;
-  assert.equal(canPlayToday(p, DEFAULT_SETTINGS, DAY), false);
-  assert.equal(canPlayToday({ ...p, extraOn: DAY }, DEFAULT_SETTINGS, DAY), true);
-  assert.equal(canPlayToday(p, { ...DEFAULT_SETTINGS, oneADay: false }, DAY), true);
-  assert.equal(canPlayToday(p, DEFAULT_SETTINGS, "2026-10-28"), true);
+  assert.equal(DEFAULT_SETTINGS.oneADay, false);
+  assert.equal(canPlayToday(p, DEFAULT_SETTINGS, DAY), true);
+  const on = { ...DEFAULT_SETTINGS, oneADay: true };
+  assert.equal(canPlayToday(p, on, DAY), false);
+  assert.equal(canPlayToday({ ...p, extraOn: DAY }, on, DAY), true);
+  assert.equal(canPlayToday(p, on, "2026-10-28"), true);
+  // v1 때 저장한 켜짐(그때 기본값)은 한 번 꺼지고, v2 에서 부모가 켠 값은 지킨다
+  assert.equal(normalizeSettings({ v: 1, oneADay: true, startOn: null }).oneADay, false);
+  assert.equal(normalizeSettings({ v: 2, oneADay: true, startOn: null }).oneADay, true);
   // 화면 보기 — 정한 방향만 남고, 예전 설정(칸 없음)·잘못된 값은 한글나라 따르기(null)
   assert.equal(normalizeSettings({ ...DEFAULT_SETTINGS, orientation: "landscape" }).orientation, "landscape");
   assert.equal(normalizeSettings({ v: 1, oneADay: false, startOn: null }).orientation, null);
@@ -167,4 +174,24 @@ test("스케줄 — 공부 요일마다 하루씩, 도장 날 표시", () => {
   assert.equal(plan[4].stamp, true);
   assert.equal(plan[5].chapter, 2);
   assert.equal(streakOf(new Set(["2026-10-26", "2026-10-27"]), DAY, [0, 1, 2, 3, 4, 5, 6]), 2);
+});
+
+test("오늘의 길 — 칸을 깰 때마다 점수를 더해 두고, 다른 날이거나 하루를 마치면 처음부터", () => {
+  const p0 = initialProgress();
+  const ref = currentSession(p0);
+  assert.ok(ref);
+  assert.equal(runOf(p0, ref).done, 0);
+  let p = stepRun(p0, ref, { correct: 2, total: 3 }, 1000);
+  p = stepRun(p, ref, { correct: 1, total: 1, bonus: 1 }, 2000);
+  const r = runOf(p, ref);
+  assert.equal(r.done, 2);
+  assert.deepEqual(r.score, { correct: 3, total: 4, activities: 2, bonus: 1 });
+  assert.equal(r.startedAt, 1000, "첫 칸을 깬 때가 시작");
+  // 다른 날(세션)의 길이면 처음부터
+  assert.equal(runOf(p, { ...ref, key: "c9d9" }).done, 0);
+  // 저장했다 불러도 그대로, 모양이 어긋나면 버린다
+  assert.deepEqual(normalizeProgress(JSON.parse(JSON.stringify(p))).run, p.run);
+  assert.equal(normalizeProgress({ ...p, run: { key: "x", done: 1 } }).run, null);
+  // 하루를 마치면 비운다
+  assert.equal(completeSession(p, ref, r.score, DAY).next.run, null);
 });

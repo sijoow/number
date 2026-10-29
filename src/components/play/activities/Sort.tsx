@@ -9,6 +9,7 @@ import { nameOf } from "@/curriculum/numbers";
 import { colorName, shapeName } from "@/curriculum/things";
 import { answerFeedback, useTurn } from "@/lib/answer";
 import type { SortRound } from "@/lib/rounds";
+import { useStep } from "@/lib/steps";
 import { sfx } from "@/lib/sfx";
 import { useTimers } from "@/lib/useTimers";
 import { pick, say, stopVoice } from "@/lib/voice";
@@ -23,6 +24,7 @@ import type { OnDone } from "../types";
  */
 export function Sort({ rounds, assess, onDone }: { rounds: SortRound[]; assess: boolean; onDone: OnDone }) {
   const [idx, setIdx] = useState(0);
+  useStep(idx, rounds.length);
   const [found, setFound] = useState<string[]>([]);
   const [shake, setShake] = useState<string | null>(null);
   const [missed, setMissed] = useState(false);

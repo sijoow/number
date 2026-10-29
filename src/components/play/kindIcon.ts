@@ -18,6 +18,14 @@ export const KIND_ICON: Record<ActivityKind, string> = {
   add: "➕",
   subtract: "➖",
   sort: "🧺",
+  "count-up": "🔢",
+  match: "🔗",
+  farm: "🐥",
+  tally: "🧮",
+  "shape-pair": "🔷",
+  dice: "🎲",
+  shop: "🛒",
+  "number-line": "📐",
 };
 
 /** 놀이 이름 — 부모 페이지 미리 보기·놀이터와 같은 말 */
@@ -38,4 +46,12 @@ export const KIND_LABEL: Record<ActivityKind, string> = {
   add: "더하기",
   subtract: "빼기",
   sort: "모양 나누기",
+  "count-up": "수 세기 기초",
+  match: "짝 연결하기",
+  farm: "작은 농장",
+  tally: "숫자 퍼즐",
+  "shape-pair": "도형 맞추기",
+  dice: "주사위 찾기",
+  shop: "가게 놀이",
+  "number-line": "수직선 밝히기",
 };

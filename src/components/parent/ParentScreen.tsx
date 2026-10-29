@@ -16,6 +16,7 @@ import { VOICES } from "@/lib/voices";
 import { AdminPanel } from "./AdminPanel";
 import { Card, FamilyCard, ProgramControls, ProgressSummary, RecordTable, ReportCard, StampCard } from "./report";
 import { ScheduleCard } from "./schedule";
+import { SongsCard } from "./SongsCard";
 
 const SYNC_LABEL: Record<SyncState, string> = {
   starting: "확인 중…",
@@ -116,6 +117,8 @@ export default function ParentScreen() {
         </div>
 
         <ProgramControls saved={saved} today={today} who={`@${auth.user.id}`} hangulView={family.orientation} change={(fn) => updateSaved(fn)} />
+
+        <SongsCard />
 
         <div className="grid gap-5 lg:grid-cols-2">
           <StampCard history={progress.history} stamps={progress.stamps} />

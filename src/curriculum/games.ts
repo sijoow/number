@@ -40,6 +40,15 @@ export const GAMES: readonly Game[] = [
   { id: "add", title: "더하기", icon: "➕", tone: "peach", spec: ({ top }) => ({ kind: "add", max: Math.min(ARITH_MAX, Math.max(2, top)), rounds: 4 }) },
   { id: "subtract", title: "빼기", icon: "➖", tone: "lilac", spec: ({ top }) => ({ kind: "subtract", max: Math.min(ARITH_MAX, Math.max(2, top)), rounds: 4 }) },
   { id: "sort", title: "모양 나누기", icon: "🧺", tone: "butter", spec: () => ({ kind: "sort", by: "mix", rounds: 3 }) },
+  // 업체 유아 단계 놀이(2026-10-28) — 과정에서 처음 나온 날부터 열린다
+  { id: "count-up", title: "수 세기 기초", icon: "🔢", tone: "sky", spec: ({ top }) => ({ kind: "count-up", range: [Math.max(1, Math.min(top, 10) - 4), Math.min(top, 10)], mix: true }) },
+  { id: "match", title: "짝 연결하기", icon: "🔗", tone: "mint", spec: ({ top }) => ({ kind: "match", by: "number", nums: [1, Math.min(top, 10)], rounds: 3 }) },
+  { id: "farm", title: "작은 농장", icon: "🐥", tone: "butter", spec: ({ top }) => ({ kind: "farm", range: [1, Math.min(top, 7)], rounds: 4 }) },
+  { id: "tally", title: "숫자 퍼즐", icon: "🧮", tone: "peach", spec: ({ top }) => ({ kind: "tally", range: [1, Math.min(top, 10)] }) },
+  { id: "shape-pair", title: "도형 맞추기", icon: "🔷", tone: "lilac", spec: () => ({ kind: "shape-pair", rounds: 3 }) },
+  { id: "dice", title: "주사위 찾기", icon: "🎲", tone: "rose", spec: ({ top }) => ({ kind: "dice", range: [1, Math.min(top, 6)] }) },
+  { id: "shop", title: "가게 놀이", icon: "🛒", tone: "peach", spec: ({ top }) => ({ kind: "shop", range: [1, Math.min(top, 10)], rounds: 3 }) },
+  { id: "number-line", title: "수직선 밝히기", icon: "📐", tone: "lilac", spec: ({ top }) => ({ kind: "number-line", max: Math.min(10, Math.max(3, top)), rounds: 3 }) },
 ];
 
 /** 놀이터 카드 아래 "○○까지" — 수를 다루는 놀이만(더하기·빼기·모으기는 5, 더 많은 쪽은 10까지). 모양·규칙·크기·나누기는 없다 */
@@ -47,7 +56,8 @@ export function gameReach(id: ActivityKind, top: number): number | null {
   const s = gameOf(id)?.spec({ top, patternLevel: "ab" });
   if (!s) return null;
   if ("range" in s) return s.range[1];
-  if (s.kind === "join" || s.kind === "add" || s.kind === "subtract") return s.max;
+  if (s.kind === "join" || s.kind === "add" || s.kind === "subtract" || s.kind === "number-line") return s.max;
+  if (s.kind === "match") return s.nums?.[1] ?? null;
   return null;
 }
 

@@ -6,6 +6,7 @@ import { SquishButton } from "@/components/ui";
 import { buildAsk, LINES } from "@/curriculum/lines";
 import { MAX_NUMBER, nameOf } from "@/curriculum/numbers";
 import { answerFeedback, useTurn } from "@/lib/answer";
+import { useStep } from "@/lib/steps";
 import { sfx } from "@/lib/sfx";
 import { useTimers } from "@/lib/useTimers";
 import { pick, say, stopVoice } from "@/lib/voice";
@@ -23,6 +24,7 @@ const PER_COLUMN = 5;
 
 export function Build({ rounds, assess, onDone }: { rounds: { n: number }[]; assess: boolean; onDone: OnDone }) {
   const [idx, setIdx] = useState(0);
+  useStep(idx, rounds.length);
   const [count, setCount] = useState(0);
   const [state, setState] = useState<"building" | "right" | "wrong" | "reveal">("building");
   const [missed, setMissed] = useState(false);

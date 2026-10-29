@@ -333,3 +333,14 @@ export function Splash() {
     </main>
   );
 }
+
+/** 접힌 지도 — 모험 지도 단추 */
+export function MapGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" width="1.15em" height="1.15em" aria-hidden>
+      <path d="M3 6.5l5.5-2.5 7 2.5L21 4v13.5L15.5 20l-7-2.5L3 20z" fill="var(--sky)" stroke="var(--sky-deep)" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M8.5 4v13.5M15.5 6.5V20" stroke="var(--sky-deep)" strokeWidth="1.6" />
+      <circle cx="12" cy="11" r="2" fill="var(--brand)" />
+    </svg>
+  );
+}

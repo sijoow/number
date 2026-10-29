@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { sfx } from "@/lib/sfx";
+import { starBurst } from "@/lib/stars";
 import { say } from "@/lib/voice";
 
 /*
@@ -42,8 +43,11 @@ export async function answerFeedback({
     await say(name);
     if (!alive()) return false;
   }
-  if (right) sfx.dingdong();
-  else sfx.ddaeng();
+  // 맞으면 정답 별도 같이(업체 정답 반응, 2026-10-28)
+  if (right) {
+    sfx.dingdong();
+    starBurst();
+  } else sfx.ddaeng();
   await wait(right ? 700 : 450);
   if (!alive()) return false;
   if (then.length) await say(then);

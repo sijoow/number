@@ -103,7 +103,8 @@ test("놀이마다 아직 안 만난 수를 쓰지 않는다", () => {
   const top = (a: ActivitySpec): number => {
     if ("range" in a) return a.range[1];
     if (a.kind === "trace") return Math.max(...a.digits);
-    if (a.kind === "join" || a.kind === "add" || a.kind === "subtract") return a.max;
+    if (a.kind === "join" || a.kind === "add" || a.kind === "subtract" || a.kind === "number-line") return a.max;
+    if (a.kind === "match") return a.nums?.[1] ?? 0;
     if (a.kind === "meet") return a.n;
     return 0;
   };

@@ -1,5 +1,5 @@
 {
-  "total": 83,
+  "total": 109,
   "friends": [
     {
       "key": "friend:1",
@@ -289,6 +289,24 @@
       "kind": "thing",
       "now": "🦋",
       "what": "세는 물건: 나비"
+    },
+    {
+      "key": "thing:sheep",
+      "kind": "thing",
+      "now": "🐑",
+      "what": "세는 물건: 양"
+    },
+    {
+      "key": "thing:cow",
+      "kind": "thing",
+      "now": "🐄",
+      "what": "세는 물건: 소"
+    },
+    {
+      "key": "thing:pig",
+      "kind": "thing",
+      "now": "🐷",
+      "what": "세는 물건: 돼지"
     }
   ],
   "icons": [
@@ -305,6 +323,12 @@
       "what": "메뉴 아이콘: 숫자 놀이 — 숫자 친구가 그 놀이를 하는 모습"
     },
     {
+      "key": "icon:menu:think",
+      "kind": "icon",
+      "now": "🧩",
+      "what": "메뉴 아이콘: 생각 놀이 — 숫자 친구가 그 놀이를 하는 모습"
+    },
+    {
       "key": "icon:menu:friends",
       "kind": "icon",
       "now": "🧱",
@@ -315,6 +339,18 @@
       "kind": "icon",
       "now": "✏️",
       "what": "메뉴 아이콘: 숫자 쓰기 — 숫자 친구가 그 놀이를 하는 모습"
+    },
+    {
+      "key": "icon:menu:tower",
+      "kind": "icon",
+      "now": "🏠",
+      "what": "메뉴 아이콘: 친구 집 짓기 — 숫자 친구가 그 놀이를 하는 모습"
+    },
+    {
+      "key": "icon:menu:songs",
+      "kind": "icon",
+      "now": "🎵",
+      "what": "메뉴 아이콘: 노래 — 숫자 친구가 그 놀이를 하는 모습"
     },
     {
       "key": "icon:block",
@@ -435,6 +471,78 @@
       "kind": "icon",
       "now": "🧺",
       "what": "모양 나누기 — a small woven basket holding a few colourful toy shapes"
+    },
+    {
+      "key": "icon:play:count-up",
+      "kind": "icon",
+      "now": "🔢",
+      "what": "수 세기 기초 — three yellow toy stars in a row with three small dots above them"
+    },
+    {
+      "key": "icon:play:match",
+      "kind": "icon",
+      "now": "🔗",
+      "what": "짝 연결하기 — two matching red apple cards joined by a short yellow line"
+    },
+    {
+      "key": "icon:play:farm",
+      "kind": "icon",
+      "now": "🐥",
+      "what": "작은 농장 — a little red barn with a white X on the door"
+    },
+    {
+      "key": "icon:play:tally",
+      "kind": "icon",
+      "now": "🧮",
+      "what": "숫자 퍼즐 — a small wooden board with tally marks and one wooden number tile"
+    },
+    {
+      "key": "icon:play:shape-pair",
+      "kind": "icon",
+      "now": "🔷",
+      "what": "도형 맞추기 — a big blue square and a small blue square side by side"
+    },
+    {
+      "key": "icon:play:dice",
+      "kind": "icon",
+      "now": "🎲",
+      "what": "주사위 찾기 — a chunky white toy die showing three red dots"
+    },
+    {
+      "key": "icon:play:shop",
+      "kind": "icon",
+      "now": "🛒",
+      "what": "가게 놀이 — a small red shopping basket with a red apple inside"
+    },
+    {
+      "key": "icon:play:number-line",
+      "kind": "icon",
+      "now": "📐",
+      "what": "수직선 밝히기 — a short number line with three coloured toy cubes on it, glowing"
+    },
+    {
+      "key": "icon:think:mirror",
+      "kind": "icon",
+      "now": "🦋",
+      "what": "거울 그림 — a symmetrical butterfly made of colourful dots, mirrored left and right"
+    },
+    {
+      "key": "icon:think:memory",
+      "kind": "icon",
+      "now": "🃏",
+      "what": "짝 맞추기 — two face-down cards and one card flipped open showing a red cube"
+    },
+    {
+      "key": "icon:think:who-hid",
+      "kind": "icon",
+      "now": "🙈",
+      "what": "누가 숨었을까 — a small red stage curtain half open"
+    },
+    {
+      "key": "icon:menu:map",
+      "kind": "icon",
+      "now": "🗺️",
+      "what": "메뉴 아이콘: 모험 지도 — 숫자 친구가 지도를 펼친 모습"
     }
   ],
   "scenes": [
@@ -521,6 +629,54 @@
       "kind": "scene",
       "now": "🧺",
       "what": "놀이터 카드 장면: 모양 나누기"
+    },
+    {
+      "key": "scene:free:count-up",
+      "kind": "scene",
+      "now": "🔢",
+      "what": "놀이터 카드 장면: 수 세기 기초"
+    },
+    {
+      "key": "scene:free:match",
+      "kind": "scene",
+      "now": "🔗",
+      "what": "놀이터 카드 장면: 짝 연결하기"
+    },
+    {
+      "key": "scene:free:farm",
+      "kind": "scene",
+      "now": "🐥",
+      "what": "놀이터 카드 장면: 작은 농장"
+    },
+    {
+      "key": "scene:free:tally",
+      "kind": "scene",
+      "now": "🧮",
+      "what": "놀이터 카드 장면: 숫자 퍼즐"
+    },
+    {
+      "key": "scene:free:shape-pair",
+      "kind": "scene",
+      "now": "🔷",
+      "what": "놀이터 카드 장면: 도형 맞추기"
+    },
+    {
+      "key": "scene:free:dice",
+      "kind": "scene",
+      "now": "🎲",
+      "what": "놀이터 카드 장면: 주사위 찾기"
+    },
+    {
+      "key": "scene:free:shop",
+      "kind": "scene",
+      "now": "🛒",
+      "what": "놀이터 카드 장면: 가게 놀이"
+    },
+    {
+      "key": "scene:free:number-line",
+      "kind": "scene",
+      "now": "📐",
+      "what": "놀이터 카드 장면: 수직선 밝히기"
     }
   ],
   "bgs": [

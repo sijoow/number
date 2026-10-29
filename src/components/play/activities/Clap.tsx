@@ -6,6 +6,7 @@ import { Icon } from "@/components/Icon";
 import { SquishButton } from "@/components/ui";
 import { clapAsk, LINES } from "@/curriculum/lines";
 import { MAX_NUMBER, nameOf } from "@/curriculum/numbers";
+import { useStep } from "@/lib/steps";
 import { sfx } from "@/lib/sfx";
 import { useTimers } from "@/lib/useTimers";
 import { pick, say, stopVoice } from "@/lib/voice";
@@ -21,6 +22,7 @@ const WAIT = 1500;
 
 export function Clap({ rounds, assess, onDone }: { rounds: { n: number }[]; assess: boolean; onDone: OnDone }) {
   const [idx, setIdx] = useState(0);
+  useStep(idx, rounds.length);
   const [taps, setTaps] = useState(0);
   const [state, setState] = useState<"ready" | "counting" | "right" | "demo">("ready");
   const [lit, setLit] = useState(-1);

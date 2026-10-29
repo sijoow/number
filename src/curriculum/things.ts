@@ -27,6 +27,10 @@ export const THINGS: readonly Thing[] = [
   { id: "fish", name: "물고기", emoji: "🐟", unit: "마리" },
   { id: "chick", name: "병아리", emoji: "🐥", unit: "마리" },
   { id: "butterfly", name: "나비", emoji: "🦋", unit: "마리" },
+  // 작은 농장 동물(2026-10-29 — 업체 농장처럼 판마다 동물이 바뀐다)
+  { id: "sheep", name: "양", emoji: "🐑", unit: "마리" },
+  { id: "cow", name: "소", emoji: "🐄", unit: "마리" },
+  { id: "pig", name: "돼지", emoji: "🐷", unit: "마리" },
 ];
 
 const BY_ID = new Map(THINGS.map((t) => [t.id, t]));

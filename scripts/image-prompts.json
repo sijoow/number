@@ -1,6 +1,6 @@
 {
-  "total": 83,
-  "credits": 44,
+  "total": 109,
+  "credits": 57,
   "refs": [
     "refs/gen/numberblocks-a.png",
     "refs/gen/numberblocks-b.png"
@@ -670,6 +670,57 @@
       "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A single colourful butterfly, simple smooth toy-like object, no face, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
     },
     {
+      "key": "thing:sheep",
+      "file": "img/things/sheep.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A single fluffy white sheep with a cute face, standing, simple smooth toy-like object, no face, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "thing:cow",
+      "file": "img/things/cow.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A single little brown-and-white cow with a cute face, standing, simple smooth toy-like object, no face, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "thing:pig",
+      "file": "img/things/pig.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A single little pink pig with a cute face, standing, simple smooth toy-like object, no face, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
       "key": "icon:menu:free",
       "file": "img/icons/menu-free.webp",
       "refs": [
@@ -704,6 +755,23 @@
       "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Numberblocks One and Two playing a board game together, One holding up a big white toy die with red dots, small icon. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
     },
     {
+      "key": "icon:menu:think",
+      "file": "img/icons/menu-think.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Numberblock Two with one hand on its chin, thinking, a small glowing light bulb above, small icon. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
       "key": "icon:menu:friends",
       "file": "img/icons/menu-friends.webp",
       "refs": [
@@ -736,6 +804,40 @@
       },
       "credits": 0.5,
       "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Numberblock Three holding a big yellow pencil, small icon. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "icon:menu:tower",
+      "file": "img/icons/menu-tower.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Numberblock One standing proudly in front of a tiny house built from red toy cubes, small icon. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "icon:menu:songs",
+      "file": "img/icons/menu-songs.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Numberblocks One and Two singing happily together with open mouths, colourful music notes floating around them, small icon. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
     },
     {
       "key": "icon:block",
@@ -1078,6 +1180,210 @@
       "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A small app icon: 모양 나누기 — a small woven basket holding a few colourful toy shapes. Simple object, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
     },
     {
+      "key": "icon:play:count-up",
+      "file": "img/icons/play-count-up.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A small app icon: 수 세기 기초 — three yellow toy stars in a row with three small dots above them. Simple object, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "icon:play:match",
+      "file": "img/icons/play-match.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A small app icon: 짝 연결하기 — two matching red apple cards joined by a short yellow line. Simple object, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "icon:play:farm",
+      "file": "img/icons/play-farm.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A small app icon: 작은 농장 — a little red barn with a white X on the door. Simple object, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "icon:play:tally",
+      "file": "img/icons/play-tally.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A small app icon: 숫자 퍼즐 — a small wooden board with tally marks and one wooden number tile. Simple object, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "icon:play:shape-pair",
+      "file": "img/icons/play-shape-pair.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A small app icon: 도형 맞추기 — a big blue square and a small blue square side by side. Simple object, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "icon:play:dice",
+      "file": "img/icons/play-dice.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A small app icon: 주사위 찾기 — a chunky white toy die showing three red dots. Simple object, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "icon:play:shop",
+      "file": "img/icons/play-shop.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A small app icon: 가게 놀이 — a small red shopping basket with a red apple inside. Simple object, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "icon:play:number-line",
+      "file": "img/icons/play-number-line.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A small app icon: 수직선 밝히기 — a short number line with three coloured toy cubes on it, glowing. Simple object, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "icon:think:mirror",
+      "file": "img/icons/think-mirror.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A small app icon: 거울 그림 — a symmetrical butterfly made of colourful dots, mirrored left and right. Simple object, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "icon:think:memory",
+      "file": "img/icons/think-memory.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A small app icon: 짝 맞추기 — two face-down cards and one card flipped open showing a red cube. Simple object, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "icon:think:who-hid",
+      "file": "img/icons/think-who-hid.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. A small app icon: 누가 숨었을까 — a small red stage curtain half open. Simple object, no character. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
+      "key": "icon:menu:map",
+      "file": "img/icons/menu-map.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "1:1",
+        "background": "transparent"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Numberblock One holding open a big colourful treasure map with a dotted path, small icon. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. No logos, no watermarks, no other text or letters. Centred with a small margin, fully transparent background, no ground, no shadow."
+    },
+    {
       "key": "scene:free:count",
       "file": "img/scenes/free-count.webp",
       "refs": [
@@ -1314,6 +1620,142 @@
       },
       "credits": 0.5,
       "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Only Numberblock Five in the scene, putting colourful toy shapes into two baskets on the grass — red shapes into a red basket and blue shapes into a blue basket. No other Numberblocks anywhere. Each Numberblock has its small black numeral floating above its head. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. Numberland setting: sky-blue sky fading lighter toward the horizon, puffy white clouds, smooth layered lime-green hills with a soft white mist band, minimal detail. No logos, no watermarks, no other text or letters."
+    },
+    {
+      "key": "scene:free:count-up",
+      "file": "img/scenes/free-count-up.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "4:3",
+        "background": "opaque"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Only Numberblock Three in the scene, pointing at three yellow stars lined up on the grass one by one, counting. No other Numberblocks anywhere. Each Numberblock has its small black numeral floating above its head. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. Numberland setting: sky-blue sky fading lighter toward the horizon, puffy white clouds, smooth layered lime-green hills with a soft white mist band, minimal detail. No logos, no watermarks, no other text or letters."
+    },
+    {
+      "key": "scene:free:match",
+      "file": "img/scenes/free-match.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "4:3",
+        "background": "opaque"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Only Numberblock Two in the scene, connecting two matching picture cards with a long glowing yellow line. No other Numberblocks anywhere. Each Numberblock has its small black numeral floating above its head. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. Numberland setting: sky-blue sky fading lighter toward the horizon, puffy white clouds, smooth layered lime-green hills with a soft white mist band, minimal detail. No logos, no watermarks, no other text or letters."
+    },
+    {
+      "key": "scene:free:farm",
+      "file": "img/scenes/free-farm.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "4:3",
+        "background": "opaque"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Only Numberblock Four in the scene, standing next to a little red barn on a farm while two little sheep walk inside. No other Numberblocks anywhere. Each Numberblock has its small black numeral floating above its head. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. Numberland setting: sky-blue sky fading lighter toward the horizon, puffy white clouds, smooth layered lime-green hills with a soft white mist band, minimal detail. No logos, no watermarks, no other text or letters."
+    },
+    {
+      "key": "scene:free:tally",
+      "file": "img/scenes/free-tally.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "4:3",
+        "background": "opaque"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Only Numberblock Five in the scene, standing next to a wooden board showing tally marks I, II, III, IIII, holding a wooden number tile. No other Numberblocks anywhere. Each Numberblock has its small black numeral floating above its head. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. Numberland setting: sky-blue sky fading lighter toward the horizon, puffy white clouds, smooth layered lime-green hills with a soft white mist band, minimal detail. No logos, no watermarks, no other text or letters."
+    },
+    {
+      "key": "scene:free:shape-pair",
+      "file": "img/scenes/free-shape-pair.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "4:3",
+        "background": "opaque"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Only Numberblock Four in the scene, holding a big triangle card and a small triangle card together, matching them. No other Numberblocks anywhere. Each Numberblock has its small black numeral floating above its head. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. Numberland setting: sky-blue sky fading lighter toward the horizon, puffy white clouds, smooth layered lime-green hills with a soft white mist band, minimal detail. No logos, no watermarks, no other text or letters."
+    },
+    {
+      "key": "scene:free:dice",
+      "file": "img/scenes/free-dice.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "4:3",
+        "background": "opaque"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Only Numberblock Six in the scene, holding up a big white toy die showing three red dots. No other Numberblocks anywhere. Each Numberblock has its small black numeral floating above its head. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. Numberland setting: sky-blue sky fading lighter toward the horizon, puffy white clouds, smooth layered lime-green hills with a soft white mist band, minimal detail. No logos, no watermarks, no other text or letters."
+    },
+    {
+      "key": "scene:free:shop",
+      "file": "img/scenes/free-shop.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "4:3",
+        "background": "opaque"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Only Numberblock One in the scene, behind a little shop counter with a red basket, holding out one red strawberry. No other Numberblocks anywhere. Each Numberblock has its small black numeral floating above its head. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. Numberland setting: sky-blue sky fading lighter toward the horizon, puffy white clouds, smooth layered lime-green hills with a soft white mist band, minimal detail. No logos, no watermarks, no other text or letters."
+    },
+    {
+      "key": "scene:free:number-line",
+      "file": "img/scenes/free-number-line.webp",
+      "refs": [
+        "refs/gen/numberblocks-a.png",
+        "refs/gen/numberblocks-b.png"
+      ],
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "medium",
+        "resolution": "1k",
+        "aspect_ratio": "4:3",
+        "background": "opaque"
+      },
+      "credits": 0.5,
+      "prompt": "Numberblocks-style 3D CG preschool animation still, exactly like the reference images: toy-like matte plastic look with softly rounded edges, bright solid colours, bright soft daylight, gentle soft shadows, no black outlines, no textures. Each Numberblock is made of equal cubes with thin visible seams between them, in its own solid colours exactly as described (most are one colour; Seven is a rainbow, Nine has three greys, Ten is white with red edges), big round cartoon eyes and a small mouth on the front of the top cube, no nose, no ears, thin darker stubby arms from the sides and two short legs under the bottom cube, no LEGO studs, no human fingers unless it wears gloves. Only Numberblock Three in the scene, placing a short bar of coloured cubes onto a long number line with ticks. No other Numberblocks anywhere. Each Numberblock has its small black numeral floating above its head. Match this character in the reference images exactly: same colours, same face, same accessories, and exactly the right number of cubes — count them. Numberland setting: sky-blue sky fading lighter toward the horizon, puffy white clouds, smooth layered lime-green hills with a soft white mist band, minimal detail. No logos, no watermarks, no other text or letters."
     },
     {
       "key": "bg:home",

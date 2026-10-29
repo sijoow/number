@@ -1,9 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { CHAPTERS, dayPlan } from "../curriculum/course.ts";
-import { GAMES } from "../curriculum/games.ts";
-import { ORIGINALS } from "../curriculum/originals.ts";
-import { missionState, todayMissions, todayFriend } from "./missions.ts";
+import { GIFTS, isGift } from "../curriculum/gifts.ts";
+import { giftNew, giftOpen, giftsOf, missionState, nextGift, todayMissions, todayFriend } from "./missions.ts";
 import {
   BLOCK_CHALLENGE,
   BLOCK_MISSION,
@@ -11,10 +10,11 @@ import {
   blocksFor,
   checkIn,
   claimMissions,
+  completeSession,
+  currentSession,
   finishGame,
   initialProgress,
   normalizeProgress,
-  noteWrite,
   placeBlock,
   restartAt,
   TRAIN_CARS,
@@ -103,16 +103,15 @@ test("오늘의 미션 — 같은 날은 같은 셋, 다 하면 도장 + 블록(
   assert.deepEqual(a, todayMissions(base, day));
   assert.equal(a.length, 3);
   assert.equal(a[0].kind, "lesson");
-  assert.equal(a[1].kind, "free");
-  // 복습 놀이는 이미 열린 놀이
-  if (a[1].kind === "free") assert.ok(GAMES.some((g) => g.id === (a[1] as { game: string }).game));
+  // ②③ 은 서로 다른 메뉴의 놀이
+  const [, b, c] = a;
+  assert.ok(b.kind === "play" && c.kind === "play" && b.menu !== c.menu);
   assert.ok(a.every((m) => !m.done));
 
   // 셋 다 해 본다
   let p: Progress = { ...base, lastPlayedOn: day };
   for (const m of a) {
-    if (m.kind === "free" || m.kind === "game") p = finishGame(p, m.game, 1000, day).next;
-    if (m.kind === "write") p = noteWrite(p, m.n, day);
+    if (m.kind === "play") p = finishGame(p, m.game, 1000, day).next;
   }
   const st = missionState(p, day);
   assert.ok(st.allDone);
@@ -124,21 +123,64 @@ test("오늘의 미션 — 같은 날은 같은 셋, 다 하면 도장 + 블록(
   assert.equal(claimMissions(claimed.next, day).earned, 0);
 });
 
-test("오늘의 미션 — 여러 날에 걸쳐 쓰기·숫자 놀이가 번갈아 나오고, 쓰기는 만난 친구 숫자", () => {
+test("오늘의 미션 — ②③ 은 놀이터·숫자 놀이·생각 놀이에서 날마다 돌아가며, 선물 놀이는 받은 것만", () => {
   const p = restartAt(initialProgress(), 8);
-  const kinds = new Set<string>();
+  const menus = new Set<string>();
   for (let d = 1; d <= 28; d++) {
-    const third = todayMissions(p, dayN(d))[2];
-    kinds.add(third.kind);
-    if (third.kind === "write") assert.ok(p.friends.includes(third.n));
-    if (third.kind === "game") assert.ok(ORIGINALS.some((o) => o.id === third.game));
+    for (const m of todayMissions(p, dayN(d)).slice(1)) {
+      assert.equal(m.kind, "play");
+      if (m.kind !== "play") continue;
+      menus.add(m.menu);
+      assert.ok(!isGift(m.game), `${m.game}: 받지 않은 선물 놀이`);
+      assert.notEqual(m.game, "yut");
+    }
   }
-  assert.deepEqual([...kinds].sort(), ["game", "write"]);
-  // 친구를 아직 안 만났으면 쓰기 대신 숫자 놀이, 오늘의 친구도 없다
+  assert.deepEqual([...menus].sort(), ["free", "games", "think"]);
+  // 친구를 아직 안 만났으면 오늘의 친구가 없다
   const fresh = initialProgress();
-  for (let d = 1; d <= 10; d++) assert.notEqual(todayMissions(fresh, dayN(d))[2].kind, "write");
   assert.equal(todayFriend(fresh, dayN(1)), null);
   assert.ok(p.friends.includes(todayFriend(p, dayN(3)) ?? -1));
+});
+
+test("오늘의 미션 — 오늘의 놀이를 해서 진도가 넘어가도 그날 미션은 그대로", () => {
+  const base = restartAt(initialProgress(), 3);
+  const day = dayN(5);
+  const a = todayMissions(base, day);
+  const ref = currentSession(base);
+  assert.ok(ref);
+  const after = completeSession(base, ref, { correct: 3, total: 3, activities: ref.plan.activities.length }, day).next;
+  const b = todayMissions(after, day);
+  assert.deepEqual(b.slice(1), a.slice(1));
+  assert.deepEqual(b[0], { kind: "lesson", done: true });
+});
+
+test("새 놀이 선물 — 도장 하나에 하나씩 차례로 열리고, 받은 다음 날부터 사흘은 ② 가 그 놀이", () => {
+  let p = restartAt(initialProgress(), 3);
+  assert.deepEqual(giftsOf(p), []);
+  assert.deepEqual(nextGift(p), GIFTS[0]);
+  assert.ok(!giftOpen(p, GIFTS[0].id, false));
+  assert.ok(giftOpen(p, GIFTS[0].id, true), "마스터는 다 열림");
+  assert.ok(giftOpen(p, "mirror", false), "원래 있던 놀이는 늘 열림");
+  const day = dayN(5);
+  const before = p;
+  p = claimMissions(p, day).next;
+  assert.deepEqual(giftNew(before, p), GIFTS[0]);
+  assert.equal(giftNew(p, p), null);
+  assert.ok(giftOpen(p, GIFTS[0].id, false));
+  // 받은 날은 미션이 그대로(도장 판이 다시 비지 않게)
+  assert.deepEqual(todayMissions(p, day), todayMissions(before, day));
+  for (const k of [1, 2, 3]) {
+    const m = todayMissions(p, dayN(5 + k))[1];
+    assert.ok(m.kind === "play" && m.game === GIFTS[0].id && m.fresh, `${k}일 뒤 ② 는 새 놀이`);
+  }
+  const later = todayMissions(p, dayN(9))[1];
+  assert.ok(later.kind === "play" && !later.fresh);
+  p = claimMissions(p, dayN(6)).next;
+  assert.deepEqual(giftsOf(p), GIFTS.slice(0, 2));
+  // 다 받으면 더 없다
+  const all = { ...p, missionDays: Array.from({ length: GIFTS.length + 2 }, (_, i) => dayN(i + 1)) };
+  assert.equal(nextGift(all), null);
+  assert.equal(giftsOf(all).length, GIFTS.length);
 });
 
 test("저장 값 검사 — 새 칸(출석·탑·미션·쓰기)을 지키고, 탑은 모은 블록을 넘지 못한다", () => {

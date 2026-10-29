@@ -2,7 +2,8 @@
  * 숫자놀이 과정표 — 업체(토도수학) 나이대별 과정의 학습 목표 순서를 따른다(2026-10-27 사용자: "해당 업체 나이대별 커리큘럼을 따라서").
  *   레벨 A(유아) A1~A10 → 레벨 B(유치원 기초) B1~B10. 장 하나 = 학습 목표 하나 — 20장 × 5일 = 100일.
  *   목표와 순서는 업체 공개 교사용 페이지(todoclassroom.com/todomath/curri, docs/HANDOFF.md 4절) 그대로, 나이는 앱스토어 설명(A 유아 · B 유치원 기초).
- *   놀이·화면·캐릭터는 우리 것 — 업체 스테이지의 실제 활동은 공개돼 있지 않고, 앱을 그대로 옮기지 않는다.
+ *   놀이·화면·캐릭터는 우리 것 — 앱을 그대로 옮기지 않는다. 다만 업체 유아 단계 놀이의 방식(수 세기 기초·짝 연결하기·작은 농장·숫자 퍼즐·
+ *   도형 맞추기·도미노 산수·동물 마트·수직선 밝히기)은 사용자 폰에서 직접 보고(2026-10-28, docs/todomath-levelA.md) 그 장 목표에 맞는 날에 끼웠다.
  * 하루치 = 그 장 목표 놀이 1~2개 + 앞에서 배운 것 되풀이(업체 원칙: 같은 개념을 여러 놀이로 반복), 10분쯤.
  *   장마다 5일째는 「도장 놀이」(업체의 형성 평가 자리) — 점수 놀이만, 80% 넘으면 그 장 도장.
  *   도장을 못 받으면 연습 놀이 하루 → 도장 놀이 한 번 더. 두 번째도 못 받으면 다음 장으로 간다(부모 페이지에 '다시 볼 장'으로 남는다).
@@ -44,6 +45,23 @@ const size = (ask: "bigger" | "smaller" | "mix", rounds = 4): ActivitySpec => ({
 const add = (max: number, rounds = 4): ActivitySpec => ({ kind: "add", max, rounds });
 const subtract = (max: number, rounds = 4): ActivitySpec => ({ kind: "subtract", max, rounds });
 const sort = (by: "color" | "size" | "mix", rounds = 3): ActivitySpec => ({ kind: "sort", by, rounds });
+// 업체 유아 단계 놀이(2026-10-28 사용자: 토도수학 유아 단계 구성요소를 따라서) — 장 목표에 맞는 날에 끼운다
+/** 수 세기 기초 — a 부터 b 까지 차례로 */
+const basicCount = (a: number, b: number): ActivitySpec => ({ kind: "count-up", range: r(a, b) });
+/** 수 세기 기초 — 섞인 수, 무리 지어(배운 뒤 몸풀기) */
+const basicMix = (a: number, b: number): ActivitySpec => ({ kind: "count-up", range: r(a, b), mix: true });
+const matchSame = (rounds = 2): ActivitySpec => ({ kind: "match", by: "same", rounds });
+/** 짝 연결하기 — 숫자와 그 수만큼의 점 */
+const matchNum = (a: number, b: number, rounds = 2): ActivitySpec => ({ kind: "match", by: "number", nums: r(a, b), rounds });
+const farm = (a: number, b: number, rounds = 4): ActivitySpec => ({ kind: "farm", range: r(a, b), rounds });
+const tally = (a: number, b: number): ActivitySpec => ({ kind: "tally", range: r(a, b) });
+const shapePair = (rounds = 3): ActivitySpec => ({ kind: "shape-pair", rounds });
+/** 주사위 찾기 — a 부터 b(6 까지) 차례로 */
+const dice = (a: number, b: number): ActivitySpec => ({ kind: "dice", range: r(a, b) });
+/** 가게 놀이(레벨 A) — "딸기를 주세요!" 이름으로 하나씩, 손님 다섯(업체 마트처럼). 손님은 a~b 숫자 친구 */
+const shop = (a: number, b: number, rounds = 5): ActivitySpec => ({ kind: "shop", range: r(a, b), rounds, ask: "name" });
+/** 수직선 밝히기 — 합이 max 이하 */
+const lineUp = (max: number, rounds = 2): ActivitySpec => ({ kind: "number-line", max, rounds });
 
 const ALL_SHAPES: ShapeId[] = ["circle", "triangle", "square"];
 
@@ -58,11 +76,11 @@ export const CHAPTERS: readonly Chapter[] = [
     range: r(1, 5),
     meets: [1, 2, 3, 4, 5],
     days: [
-      [meet(1), meet(2), count(1, 2), trace(1)],
-      [meet(3), count(1, 3), howMany(1, 3), trace(2)],
-      [meet(4), count(2, 4), findNum(1, 4), trace(3)],
-      [meet(5), count(3, 5), howMany(1, 5), trace(4, 5)],
-      [count(1, 5), howMany(1, 5), findNum(1, 5)],
+      [meet(1), meet(2), basicCount(1, 2), count(1, 2), trace(1)],
+      [meet(3), count(1, 3), farm(1, 3), howMany(1, 3), trace(2)],
+      [meet(4), count(2, 4), tally(1, 4), findNum(1, 4), trace(3)],
+      [meet(5), basicCount(1, 5), count(3, 5), howMany(1, 5), trace(4, 5)],
+      [count(1, 5), howMany(1, 5), farm(1, 5), findNum(1, 5)],
     ],
   },
   {
@@ -74,11 +92,11 @@ export const CHAPTERS: readonly Chapter[] = [
     range: r(1, 5),
     meets: [],
     days: [
-      [shapeNames(["circle", "square"]), count(1, 5), findNum(1, 5), trace(1, 2)],
-      [shapeNames(["circle", "triangle"]), howMany(1, 5), count(1, 5), trace(3)],
-      [shapeNames(ALL_SHAPES), findNum(1, 5), howMany(1, 5), trace(4, 5)],
-      [shapeNames(ALL_SHAPES), count(1, 5), findNum(1, 5)],
-      [shapeNames(ALL_SHAPES), howMany(1, 5), findNum(1, 5)],
+      [shapeNames(["circle", "square"]), matchSame(), count(1, 5), findNum(1, 5), trace(1, 2)],
+      [shapeNames(["circle", "triangle"]), basicMix(1, 5), dice(1, 5), count(1, 5), trace(3)],
+      [shapeNames(ALL_SHAPES), findNum(1, 5), farm(1, 4), howMany(1, 5), trace(4, 5)],
+      [shapeNames(ALL_SHAPES), count(1, 5), tally(1, 5), findNum(1, 5)],
+      [shapeNames(ALL_SHAPES), howMany(1, 5), matchSame(), findNum(1, 5)],
     ],
   },
   {
@@ -90,11 +108,11 @@ export const CHAPTERS: readonly Chapter[] = [
     range: r(1, 5),
     meets: [],
     days: [
-      [build(1, 3), clap(1, 3), howMany(1, 5), trace(1, 2)],
-      [build(1, 5), clap(1, 5), shapeNames(ALL_SHAPES), trace(3)],
-      [build(2, 5), clap(2, 5), findNum(1, 5), trace(4, 5)],
-      [build(1, 5), clap(1, 5), count(1, 5)],
-      [build(1, 5), clap(1, 5), howMany(1, 5)],
+      [build(1, 3), shop(1, 3), clap(1, 3), howMany(1, 5), trace(1, 2)],
+      [build(1, 5), clap(1, 5), dice(1, 5), shapeNames(ALL_SHAPES), trace(3)],
+      [build(2, 5), shop(2, 5), clap(2, 5), findNum(1, 5), trace(4, 5)],
+      [build(1, 5), clap(1, 5), tally(1, 5), count(1, 5)],
+      [build(1, 5), shop(1, 5), clap(1, 5), howMany(1, 5)],
     ],
   },
   {
@@ -106,11 +124,11 @@ export const CHAPTERS: readonly Chapter[] = [
     range: r(1, 5),
     meets: [],
     days: [
-      [howMany(1, 5), compare(1, 5, "more"), build(1, 5), trace(1, 2, 3)],
-      [compare(1, 5, "more"), howMany(1, 5), clap(1, 5), trace(4, 5)],
-      [compare(1, 5, "fewer"), nextNum(1, 5), findNum(1, 5)],
-      [compare(1, 5, "mix"), howMany(1, 5), nextNum(1, 5), build(1, 5)],
-      [compare(1, 5, "mix"), howMany(1, 5), nextNum(1, 5)],
+      [howMany(1, 5), matchNum(1, 5), compare(1, 5, "more"), build(1, 5), trace(1, 2, 3)],
+      [compare(1, 5, "more"), basicMix(1, 5), dice(1, 5), clap(1, 5), trace(4, 5)],
+      [compare(1, 5, "fewer"), lineUp(3), nextNum(1, 5), farm(1, 5), findNum(1, 5)],
+      [compare(1, 5, "mix"), howMany(1, 5), matchNum(1, 5), nextNum(1, 5), build(1, 5)],
+      [compare(1, 5, "mix"), howMany(1, 5), dice(1, 5), nextNum(1, 5)],
     ],
   },
   {
@@ -122,11 +140,11 @@ export const CHAPTERS: readonly Chapter[] = [
     range: r(1, 5),
     meets: [],
     days: [
-      [shape(ALL_SHAPES), howMany(1, 5), build(1, 5), trace(1, 2)],
-      [shape(ALL_SHAPES), compare(1, 5, "mix"), count(1, 5), trace(3, 4, 5)],
-      [shape(ALL_SHAPES), findNum(1, 5), clap(1, 5)],
-      [shape(ALL_SHAPES), nextNum(1, 5), howMany(1, 5), build(1, 5)],
-      [shape(ALL_SHAPES), compare(1, 5, "mix"), findNum(1, 5)],
+      [shape(ALL_SHAPES), shapePair(), howMany(1, 5), build(1, 5), trace(1, 2)],
+      [shape(ALL_SHAPES), compare(1, 5, "mix"), matchSame(), count(1, 5), trace(3, 4, 5)],
+      [shape(ALL_SHAPES), shapePair(), findNum(1, 5), farm(1, 5), clap(1, 5)],
+      [shape(ALL_SHAPES), nextNum(1, 5), tally(1, 5), howMany(1, 5), build(1, 5)],
+      [shape(ALL_SHAPES), shapePair(), compare(1, 5, "mix"), findNum(1, 5)],
     ],
   },
   {
@@ -138,11 +156,11 @@ export const CHAPTERS: readonly Chapter[] = [
     range: r(1, 5),
     meets: [],
     days: [
-      [pattern("ab"), howMany(1, 5), shape(ALL_SHAPES), trace(1, 2, 3)],
-      [pattern("ab"), compare(1, 5, "mix"), build(1, 5), trace(4, 5)],
-      [pattern("ab"), findNum(1, 5), clap(1, 5)],
-      [pattern("ab"), nextNum(1, 5), howMany(1, 5), shape(ALL_SHAPES)],
-      [pattern("ab"), howMany(1, 5), compare(1, 5, "mix")],
+      [pattern("ab"), basicMix(1, 5), shop(1, 5), shape(ALL_SHAPES), trace(1, 2, 3)],
+      [pattern("ab"), compare(1, 5, "mix"), dice(1, 5), build(1, 5), trace(4, 5)],
+      [pattern("ab"), matchSame(), findNum(1, 5), farm(1, 5), clap(1, 5)],
+      [pattern("ab"), nextNum(1, 5), shapePair(), howMany(1, 5), shape(ALL_SHAPES)],
+      [pattern("ab"), howMany(1, 5), tally(1, 5), compare(1, 5, "mix")],
     ],
   },
   {
@@ -154,11 +172,11 @@ export const CHAPTERS: readonly Chapter[] = [
     range: r(1, 10),
     meets: [6, 7, 8, 9, 10],
     days: [
-      [meet(6), meet(7), count(4, 7), trace(6, 7)],
-      [meet(8), count(5, 8), howMany(3, 8), trace(8)],
-      [meet(9), count(6, 9), findNum(1, 9), trace(9)],
-      [meet(10), count(7, 10), howMany(5, 10), trace(10)],
-      [count(6, 10), howMany(6, 10), findNum(1, 10)],
+      [meet(6), meet(7), basicCount(5, 7), count(4, 7), trace(6, 7)],
+      [meet(8), count(5, 8), farm(3, 6), howMany(3, 8), trace(8)],
+      [meet(9), count(6, 9), tally(6, 9), findNum(1, 9), trace(9)],
+      [meet(10), basicCount(6, 10), count(7, 10), howMany(5, 10), trace(10)],
+      [count(6, 10), howMany(6, 10), tally(1, 10), findNum(1, 10)],
     ],
   },
   {
@@ -170,11 +188,11 @@ export const CHAPTERS: readonly Chapter[] = [
     range: r(1, 10),
     meets: [],
     days: [
-      [build(6, 8), clap(5, 8), howMany(5, 10), trace(6, 7, 8)],
-      [build(6, 10), clap(6, 10), count(6, 10), pattern("ab")],
-      [build(6, 10), findNum(1, 10), clap(6, 10), trace(9, 10)],
-      [build(6, 10), clap(6, 10), howMany(6, 10), shape(ALL_SHAPES)],
-      [build(6, 10), clap(6, 10), howMany(6, 10)],
+      [build(6, 8), shop(5, 8), clap(5, 8), howMany(5, 10), trace(6, 7, 8)],
+      [build(6, 10), clap(6, 10), dice(1, 6), count(6, 10), pattern("ab")],
+      [build(6, 10), shop(6, 10), findNum(1, 10), clap(6, 10), trace(9, 10)],
+      [build(6, 10), clap(6, 10), matchNum(6, 10), howMany(6, 10), shape(ALL_SHAPES)],
+      [build(6, 10), shop(6, 10), clap(6, 10), howMany(6, 10)],
     ],
   },
   {
@@ -186,11 +204,11 @@ export const CHAPTERS: readonly Chapter[] = [
     range: r(1, 10),
     meets: [],
     days: [
-      [size("bigger"), howMany(1, 10), shape(ALL_SHAPES), trace(1, 2, 3)],
-      [size("bigger"), build(1, 10), pattern("ab"), trace(4, 5, 6)],
-      [size("smaller"), findNum(1, 10), clap(1, 10), trace(7, 8)],
-      [size("mix"), nextNum(1, 10), howMany(1, 10), trace(9, 10)],
-      [size("mix"), shape(ALL_SHAPES), howMany(1, 10)],
+      [size("bigger"), shapePair(), howMany(1, 10), shape(ALL_SHAPES), trace(1, 2, 3)],
+      [size("bigger"), build(1, 10), farm(1, 6), pattern("ab"), trace(4, 5, 6)],
+      [size("smaller"), matchSame(), findNum(1, 10), clap(1, 10), trace(7, 8)],
+      [size("mix"), nextNum(1, 10), tally(1, 10), howMany(1, 10), trace(9, 10)],
+      [size("mix"), shapePair(), shape(ALL_SHAPES), howMany(1, 10)],
     ],
   },
   {
@@ -202,11 +220,11 @@ export const CHAPTERS: readonly Chapter[] = [
     range: r(1, 10),
     meets: [],
     days: [
-      [howMany(6, 10), compare(1, 10, "more"), build(6, 10), trace(6, 7)],
-      [compare(1, 10, "more"), howMany(6, 10), nextNum(1, 10), trace(8, 9)],
-      [compare(1, 10, "fewer"), nextNum(1, 10), findNum(1, 10), trace(10)],
-      [compare(1, 10, "mix"), howMany(1, 10), count(1, 10), size("mix")],
-      [compare(1, 10, "mix"), howMany(6, 10), nextNum(1, 10)],
+      [howMany(6, 10), matchNum(6, 10), compare(1, 10, "more"), build(6, 10), trace(6, 7)],
+      [compare(1, 10, "more"), howMany(6, 10), lineUp(5), nextNum(1, 10), trace(8, 9)],
+      [compare(1, 10, "fewer"), dice(1, 6), nextNum(1, 10), findNum(1, 10), trace(10)],
+      [compare(1, 10, "mix"), howMany(1, 10), lineUp(7), count(1, 10), size("mix")],
+      [compare(1, 10, "mix"), howMany(6, 10), farm(3, 7), nextNum(1, 10)],
     ],
   },
   // ── 레벨 B · 유치원 기초 — 20까지 수를 알고, 5 이하 더하기·빼기 ──
@@ -269,7 +287,7 @@ export const CHAPTERS: readonly Chapter[] = [
     days: [
       [join(3), build(1, 5), count(11, 20), trace(17, 18)],
       [join(4), howMany(1, 5), nextNum(10, 20), trace(19, 20)],
-      [join(5), clap(1, 5), pattern("abc")],
+      [join(5), lineUp(5), clap(1, 5), pattern("abc")],
       [join(5), compare(1, 10, "mix"), findNum(10, 20)],
       [join(5), howMany(1, 5), nextNum(10, 20)],
     ],
@@ -285,9 +303,9 @@ export const CHAPTERS: readonly Chapter[] = [
     days: [
       [add(3), join(5), count(11, 20)],
       [add(4), build(1, 5), findNum(10, 20), trace(1, 2, 3)],
-      [add(5), howMany(1, 10), pattern("abc")],
+      [add(5), lineUp(8), howMany(1, 10), pattern("abc")],
       [add(5), join(5), nextNum(10, 20), trace(4, 5)],
-      [add(5), join(5), howMany(1, 10)],
+      [add(5), join(5), lineUp(10), howMany(1, 10)],
     ],
   },
   {

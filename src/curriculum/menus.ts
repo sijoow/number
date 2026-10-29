@@ -4,7 +4,7 @@
  * 순수 파일 — node --test 가 그대로 읽는다.
  */
 
-export type MenuId = "free" | "games" | "friends" | "write" | "tower";
+export type MenuId = "free" | "games" | "think" | "friends" | "write" | "tower" | "songs";
 
 export interface Menu {
   id: MenuId;
@@ -19,10 +19,14 @@ export const MENUS: Menu[] = [
   { id: "free", href: "/free", title: "놀이터", icon: "🎮", tone: "sky" },
   // 우리가 같이 만든 오리지널 숫자 게임(2026-10-27 사용자) — curriculum/originals
   { id: "games", href: "/games", title: "숫자 놀이", icon: "🎲", tone: "lilac" },
+  // 업체 「사고력 세상」 Lv.1 을 우리 그림으로(2026-10-28 사용자) — curriculum/thinks
+  { id: "think", href: "/think", title: "생각 놀이", icon: "🧩", tone: "rose" },
   { id: "friends", href: "/friends", title: "숫자 친구", icon: "🧱", tone: "butter" },
   { id: "write", href: "/write", title: "숫자 쓰기", icon: "✏️", tone: "mint" },
   // 모은 블록으로 탑 쌓기(2026-10-28 사용자) — 그림은 블록 아이콘(lib/assets UI_ART 🧱)
   { id: "tower", href: "/tower", title: "친구 집 짓기", icon: "🏠", tone: "peach" },
+  // 부모가 이 폰에 넣어 둔 노래(2026-10-29 사용자) — 파일은 기기에만(lib/songs)
+  { id: "songs", href: "/songs", title: "노래", icon: "🎵", tone: "rose" },
 ];
 
 export function menuOf(id: MenuId): Menu {

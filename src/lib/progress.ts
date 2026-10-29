@@ -95,12 +95,29 @@ export interface Progress {
   missionDays: string[];
   /** 마지막으로 숫자를 쓴 날과 그날 쓴 숫자 — 쓰기 미션 확인 */
   wrote: { on: string; nums: number[] } | null;
+  /**
+   * 오늘의 길 — 지금 하는 날(세션 key)에서 몇 칸까지 깼는지와 그때까지 점수(2026-10-29 사용자: 업체처럼 하루 놀이를 길 위 칸으로 하나씩 깬다).
+   * 중간에 나가도 다시 들어오면 그 칸부터. 그날을 다 마치면(completeSession) null
+   */
+  run: DayRun | null;
+}
+
+export interface DayRun {
+  key: string;
+  /** 깬 칸 수 */
+  done: number;
+  score: SessionResult;
+  /** 첫 칸을 시작한 때(ms) — 하루 걸린 시간 */
+  startedAt: number;
 }
 
 /** 숫자놀이만의 설정 — 공부 요일·성우는 한글나라 설정을 따른다(lib/hangul). 화면 방향은 여기서 따로 정할 수도 있다 */
 export interface Settings {
-  v: 1;
-  /** 하루 한 번만 (마스터 아이디는 제한 없음) */
+  v: 2;
+  /**
+   * 하루 한 번만 (마스터 아이디는 제한 없음). 처음엔 꺼짐 — 업체처럼 오늘의 놀이를 이어서 다음 날 것까지 할 수 있다(2026-10-29 사용자 "하루 제한 풀기").
+   * 부모 페이지에서 켜면 하루 한 판. v1 때(처음엔 켜짐) 저장한 값은 v2 로 읽을 때 한 번 꺼진다.
+   */
   oneADay: boolean;
   /** 숫자놀이를 시작한 날을 부모가 고쳤으면 그 날 — null 이면 처음 한 날(progress.firstOn) */
   startOn: string | null;
@@ -145,10 +162,11 @@ export function initialProgress(chapter = 1): Progress {
     towerPlaced: 0,
     missionDays: [],
     wrote: null,
+    run: null,
   };
 }
 
-export const DEFAULT_SETTINGS: Settings = { v: 1, oneADay: true, startOn: null, orientation: null };
+export const DEFAULT_SETTINGS: Settings = { v: 2, oneADay: false, startOn: null, orientation: null };
 
 /** 지금 할 하루 — 연습 놀이가 끼어 있으면 그것. 과정을 다 마쳤으면 null */
 export function currentSession(p: Progress): SessionRef | null {
@@ -251,6 +269,7 @@ export function completeSession(p: Progress, ref: SessionRef, r: SessionResult, 
     // 오늘 이미 한 번 했다면 이번 판은 '하나 더'를 쓴 것 — 다 썼으니 닫는다
     extraOn: p.lastPlayedOn === today ? null : p.extraOn,
     lastPlayedOn: today,
+    run: null,
   };
   return { next: logPlay(next, today, { ms: r.ms ?? 0, acts: r.activities, earned }), record, moved };
 }
@@ -335,7 +354,28 @@ export function progressRate(p: Progress): { done: number; total: number; rate: 
 /** 부모가 시작 장을 바꾸면 오늘의 놀이 진도만 새로 — 블록·기록·친구·도장은 남긴다. 앞 장 친구는 만난 것으로 */
 export function restartAt(p: Progress, chapter: number): Progress {
   const before = CHAPTERS.filter((c) => c.no < chapter).flatMap((c) => [...c.meets]);
-  return { ...p, chapter, day: 1, practice: false, tries: 0, lastPlayedOn: null, extraOn: null, friends: [...new Set([...p.friends, ...before])].sort((a, b) => a - b) };
+  return { ...p, chapter, day: 1, practice: false, tries: 0, lastPlayedOn: null, extraOn: null, run: null, friends: [...new Set([...p.friends, ...before])].sort((a, b) => a - b) };
+}
+
+const EMPTY_SCORE: SessionResult = { correct: 0, total: 0, activities: 0, bonus: 0 };
+
+/** 지금 날의 길 — 저장된 길이 다른 날 것이면 처음부터 */
+export function runOf(p: Progress, ref: SessionRef | null): { done: number; score: SessionResult; startedAt: number } {
+  const r = p.run;
+  if (!ref || !r || r.key !== ref.key) return { done: 0, score: EMPTY_SCORE, startedAt: 0 };
+  return { done: Math.min(r.done, ref.plan.activities.length), score: r.score, startedAt: r.startedAt };
+}
+
+/** 오늘의 길 한 칸을 깼다 — 점수를 더해 둔다. now 는 첫 칸이면 시작한 때로 남는다 */
+export function stepRun(p: Progress, ref: SessionRef, got: { correct: number; total: number; bonus?: number }, now: number): Progress {
+  const cur = runOf(p, ref);
+  const score: SessionResult = {
+    correct: cur.score.correct + got.correct,
+    total: cur.score.total + got.total,
+    activities: cur.score.activities + 1,
+    bonus: (cur.score.bonus ?? 0) + (got.bonus ?? 0),
+  };
+  return { ...p, run: { key: ref.key, done: cur.done + 1, score, startedAt: cur.startedAt || now } };
 }
 
 /** 장이 다 끝났나 */
@@ -411,6 +451,21 @@ export function normalizeProgress(raw: unknown): Progress {
     towerPlaced: isInt(o.towerPlaced, 0, blocks) ? o.towerPlaced : 0,
     missionDays: days(o.missionDays, HISTORY_MAX),
     wrote: w && isDay(w.on) ? { on: w.on, nums: nums(w.nums, 1, MAX_NUMBER) } : null,
+    run: runFrom(o.run),
+  };
+}
+
+/** 저장된 오늘의 길 검사 — 모양이 어긋나면 처음부터(null) */
+function runFrom(raw: unknown): DayRun | null {
+  const r = obj(raw);
+  const sc = obj(r?.score);
+  if (!r || !sc || typeof r.key !== "string" || !/^c\d+(?:d\d+|p\d+)$/.test(r.key) || !isInt(r.done, 0, 30)) return null;
+  const n = (v: unknown) => (isInt(v, 0, 10_000) ? v : 0);
+  return {
+    key: r.key,
+    done: r.done,
+    score: { correct: n(sc.correct), total: n(sc.total), activities: n(sc.activities), bonus: n(sc.bonus) },
+    startedAt: typeof r.startedAt === "number" && Number.isFinite(r.startedAt) && r.startedAt >= 0 ? r.startedAt : 0,
   };
 }
 
@@ -418,8 +473,9 @@ export function normalizeSettings(raw: unknown): Settings {
   const o = obj(raw);
   if (!o) return DEFAULT_SETTINGS;
   return {
-    v: 1,
-    oneADay: typeof o.oneADay === "boolean" ? o.oneADay : DEFAULT_SETTINGS.oneADay,
+    v: 2,
+    // v1 의 oneADay 는 그때 기본값(켜짐)이라 버린다 — v2 부터 부모가 정한 값만 지킨다
+    oneADay: o.v === 2 && typeof o.oneADay === "boolean" ? o.oneADay : DEFAULT_SETTINGS.oneADay,
     startOn: isDay(o.startOn) ? o.startOn : null,
     orientation: o.orientation === "portrait" || o.orientation === "landscape" ? o.orientation : null,
   };

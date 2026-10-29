@@ -38,6 +38,9 @@ export const THING_EN: Record<string, string> = {
   fish: "little orange fish",
   chick: "little yellow chick",
   butterfly: "colourful butterfly",
+  sheep: "fluffy white sheep with a cute face, standing",
+  cow: "little brown-and-white cow with a cute face, standing",
+  pig: "little pink pig with a cute face, standing",
 };
 
 /** 첫 화면 메뉴 아이콘 — 숫자 친구가 그 놀이를 하는 모습 */
@@ -46,6 +49,10 @@ export const MENU_SCENE: Record<string, string> = {
   games: "Numberblocks One and Two playing a board game together, One holding up a big white toy die with red dots, small icon.",
   friends: "Numberblocks One, Two and Three standing side by side waving, small icon.",
   write: "Numberblock Three holding a big yellow pencil, small icon.",
+  think: "Numberblock Two with one hand on its chin, thinking, a small glowing light bulb above, small icon.",
+  tower: "Numberblock One standing proudly in front of a tiny house built from red toy cubes, small icon.",
+  map: "Numberblock One holding open a big colourful treasure map with a dotted path, small icon.",
+  songs: "Numberblocks One and Two singing happily together with open mouths, colourful music notes floating around them, small icon.",
 };
 
 /** 놀이터 카드 장면 — 숫자 친구가 그 놀이를 하는 모습 */
@@ -64,5 +71,14 @@ export const GAME_SCENE: Record<string, string> = {
   size: "Only Numberblock Four in the scene, standing next to a big red triangle and a small red triangle on the grass, pointing at the big one. No other Numberblocks anywhere.",
   add: "Numberblock Two and Numberblock One standing on either side of a big chunky plus-sign shaped toy, happy.",
   subtract: "Only Numberblock Two in the scene, waving goodbye to one single cube with a happy face that floats up and away like a balloon. No other Numberblocks anywhere.",
+  // 업체 유아 단계 놀이(2026-10-29) — 카드끼리 구분되게 "그 친구만"
+  "count-up": "Only Numberblock Three in the scene, pointing at three yellow stars lined up on the grass one by one, counting. No other Numberblocks anywhere.",
+  match: "Only Numberblock Two in the scene, connecting two matching picture cards with a long glowing yellow line. No other Numberblocks anywhere.",
+  farm: "Only Numberblock Four in the scene, standing next to a little red barn on a farm while two little sheep walk inside. No other Numberblocks anywhere.",
+  tally: "Only Numberblock Five in the scene, standing next to a wooden board showing tally marks I, II, III, IIII, holding a wooden number tile. No other Numberblocks anywhere.",
+  "shape-pair": "Only Numberblock Four in the scene, holding a big triangle card and a small triangle card together, matching them. No other Numberblocks anywhere.",
+  dice: "Only Numberblock Six in the scene, holding up a big white toy die showing three red dots. No other Numberblocks anywhere.",
+  shop: "Only Numberblock One in the scene, behind a little shop counter with a red basket, holding out one red strawberry. No other Numberblocks anywhere.",
+  "number-line": "Only Numberblock Three in the scene, placing a short bar of coloured cubes onto a long number line with ticks. No other Numberblocks anywhere.",
   sort: "Only Numberblock Five in the scene, putting colourful toy shapes into two baskets on the grass — red shapes into a red basket and blue shapes into a blue basket. No other Numberblocks anywhere.",
 };

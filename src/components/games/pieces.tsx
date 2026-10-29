@@ -93,3 +93,62 @@ export function Fulcrum({ size }: { size: string }) {
     </svg>
   );
 }
+
+/** 알 — 위가 조금 좁은 달걀. open 이면 위가 지그재그로 깨진 아래 껍데기만(친구가 나온 뒤) */
+export function Egg({ size, fill = "#fff7e6", open = false, className = "" }: { size: string; fill?: string; open?: boolean; className?: string }) {
+  return (
+    <svg viewBox="0 0 100 120" style={{ width: size, height: `calc(${size} * 1.2)` }} className={`shrink-0 ${className}`} aria-hidden>
+      {open ? (
+        <path d="M6 74 L18 64 L30 76 L42 62 L54 76 L66 62 L78 76 L94 66 C 97 100, 77 116, 50 116 C 23 116, 3 100, 6 74 Z" fill={fill} stroke="rgb(62 58 82 / 0.18)" strokeWidth="3" strokeLinejoin="round" />
+      ) : (
+        <>
+          <path d="M50 4 C 80 4, 96 50, 96 76 C 96 102, 76 116, 50 116 C 24 116, 4 102, 4 76 C 4 50, 20 4, 50 4 Z" fill={fill} stroke="rgb(62 58 82 / 0.18)" strokeWidth="3" />
+          <ellipse cx="32" cy="36" rx="7" ry="12" fill="#ffffff" opacity="0.75" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+/** 접시 — 하얀 동그라미에 테두리 한 줄 */
+export function Plate({ size, className = "" }: { size: string; className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: size, height: size }} className={`shrink-0 ${className}`} aria-hidden>
+      <circle cx="50" cy="52" r="47" fill="rgb(62 58 82 / 0.1)" />
+      <circle cx="50" cy="48" r="47" fill="#ffffff" />
+      <circle cx="50" cy="48" r="36" fill="none" stroke="#e8e4f0" strokeWidth="3" />
+    </svg>
+  );
+}
+
+/** 덤불 — 숨은 친구 찾기에서 친구가 숨는 곳 */
+export function Bush({ size, className = "" }: { size: string; className?: string }) {
+  return (
+    <svg viewBox="0 0 100 70" style={{ width: size, height: `calc(${size} * 0.7)` }} className={`shrink-0 ${className}`} aria-hidden>
+      <circle cx="28" cy="44" r="24" fill="#5cbf6a" />
+      <circle cx="72" cy="44" r="24" fill="#5cbf6a" />
+      <circle cx="50" cy="30" r="28" fill="#6fd27c" />
+      <rect x="10" y="44" width="80" height="24" rx="12" fill="#4fae5d" />
+      <circle cx="40" cy="22" r="6" fill="#ffffff" opacity="0.35" />
+    </svg>
+  );
+}
+
+/** 기관차 — 왼쪽을 보고 달린다 */
+export function TrainEngine({ w }: { w: string }) {
+  return (
+    <svg viewBox="0 0 130 100" aria-hidden className="shrink-0" style={{ width: `calc(${w} * 1.4)`, height: `calc(${w} * 1.08)` }}>
+      <rect x="34" y="8" width="14" height="22" rx="3" fill="#3e3a52" />
+      <rect x="28" y="4" width="26" height="9" rx="4" fill="#3e3a52" />
+      <rect x="14" y="30" width="70" height="44" rx="14" fill="#ef6a6a" />
+      <rect x="76" y="14" width="46" height="60" rx="8" fill="#4fa8e6" />
+      <rect x="84" y="22" width="30" height="22" rx="6" fill="#e8f6ff" />
+      <path d="M14 66 L2 82 L22 82 Z" fill="#f5cd36" />
+      <rect x="10" y="70" width="114" height="10" rx="4" fill="#c84b4b" />
+      <circle cx="34" cy="84" r="12" fill="#3e3a52" />
+      <circle cx="34" cy="84" r="5" fill="#ffffff" />
+      <circle cx="98" cy="84" r="12" fill="#3e3a52" />
+      <circle cx="98" cy="84" r="5" fill="#ffffff" />
+    </svg>
+  );
+}
